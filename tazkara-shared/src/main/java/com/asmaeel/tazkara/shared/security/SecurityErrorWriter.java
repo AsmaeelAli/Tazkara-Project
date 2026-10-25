@@ -13,8 +13,9 @@ public class SecurityErrorWriter {
 
     /**
      * تذكير مهم ObjectMapper هو الي بحول من جافا اوبجكت الى ملف json
-     *  استعملت الفكرة فقط عشان اوحد الردود وتكون ضمن رسالة مفهومة لا اكثر وهشي مطلوب ضمن المشروع
-     * */
+     * استعملت الفكرة فقط عشان اوحد الردود وتكون ضمن رسالة مفهومة لا اكثر وهشي مطلوب ضمن المشروع
+     *
+     */
     private final ObjectMapper objectMapper;
 
     public SecurityErrorWriter(ObjectMapper objectMapper) {

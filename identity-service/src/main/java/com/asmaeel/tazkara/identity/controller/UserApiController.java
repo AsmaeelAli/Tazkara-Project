@@ -11,7 +11,8 @@ public class UserApiController {
 
     /**
      * for test
-     * */
+     *
+     */
 
     @GetMapping
     @PreAuthorize("hasRole('ORGANIZER')")

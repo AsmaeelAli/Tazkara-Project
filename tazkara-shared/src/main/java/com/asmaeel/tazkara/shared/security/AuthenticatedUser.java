@@ -10,7 +10,8 @@ import java.util.UUID;
 
 /**
  * انا عرفت ريكورد خاص فيي وهو رح يكون principal المشترك في كل الخدمات وبقدر اعدله او اضيف مثل ما بدي عليه
- * */
+ *
+ */
 
 public record AuthenticatedUser(
         UUID id,
