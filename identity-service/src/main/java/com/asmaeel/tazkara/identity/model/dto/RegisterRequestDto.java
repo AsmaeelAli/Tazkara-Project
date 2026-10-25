@@ -6,7 +6,7 @@ import jakarta.validation.constraints.*;
 public record RegisterRequestDto(
 
         @NotBlank(message = "name is required")
-        @Pattern(regexp = "^\\p{L}[\\p{L} '\\-]*\\p{L}{1,18}\\p{L}$",message = "name must contain only letters, spaces, hyphens or apostrophes")
+        @Pattern(regexp = "^\\p{L}[\\p{L} '\\-]*\\p{L}{1,18}\\p{L}$", message = "name must contain only letters, spaces, hyphens or apostrophes")
         String name,
 
         @NotBlank(message = "email is required")
@@ -15,7 +15,7 @@ public record RegisterRequestDto(
         String email,
 
         @Size(min = 8, max = 72, message = "password must contain at least 8 characters")
-        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$",message = "password must contain at least one letter and one digit")
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$", message = "password must contain at least one letter and one digit")
         String password,
 
         @NotNull(message = "role is required and must be ATTENDEE or ORGANIZER")

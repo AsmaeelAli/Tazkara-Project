@@ -5,6 +5,7 @@ import com.asmaeel.tazkara.identity.model.dto.LoginRequestDto;
 import com.asmaeel.tazkara.identity.model.dto.LoginResponseDto;
 import com.asmaeel.tazkara.identity.model.entity.UserEntity;
 import com.asmaeel.tazkara.identity.repository.UserRepo;
+import com.asmaeel.tazkara.identity.security.jwt.JwtService;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ public class LoginUserService {
     private final Normalizer normalizer;
     private final JwtService jwtService;
 
-    public LoginUserService(UserRepo userRepo, PasswordEncoder passwordEncoder, Normalizer normalizer , JwtService jwtService) {
+    public LoginUserService(UserRepo userRepo, PasswordEncoder passwordEncoder, Normalizer normalizer, JwtService jwtService) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.normalizer = normalizer;
@@ -35,6 +36,6 @@ public class LoginUserService {
 
         String token = jwtService.generateToken(user);
 
-        return new LoginResponseDto(token,"Bearer", jwtService.getExpirationMs());
+        return new LoginResponseDto(token, "Bearer", jwtService.getExpirationMs());
     }
 }

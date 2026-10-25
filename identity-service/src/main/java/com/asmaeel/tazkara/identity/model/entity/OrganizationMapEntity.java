@@ -19,15 +19,15 @@ public class OrganizationMapEntity {
     UUID id;
 
     @NotNull
-    @Column(name = "user-id",nullable = false)
+    @Column(name = "user-id", nullable = false)
     UUID userId;
 
     @NotBlank
-    @Column(name = "original_name",nullable = false)
+    @Column(name = "original_name", nullable = false)
     String originalName;
 
     @NotBlank
-    @Column(name = "normalized-name",nullable = false,unique = true)
+    @Column(name = "normalized-name", nullable = false, unique = true)
     String normalizedName;
 
     public OrganizationMapEntity() {

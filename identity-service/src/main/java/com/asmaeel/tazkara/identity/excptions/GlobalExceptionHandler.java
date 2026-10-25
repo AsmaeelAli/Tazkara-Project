@@ -1,7 +1,6 @@
 package com.asmaeel.tazkara.identity.excptions;
 
 import com.asmaeel.tazkara.identity.model.dto.MessageResponse;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -46,7 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessRuleException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)//422
-    public MessageResponse handleBusinessRuleException(BusinessRuleException e){
+    public MessageResponse handleBusinessRuleException(BusinessRuleException e) {
         return new MessageResponse(e.getMessage());
     }
 }

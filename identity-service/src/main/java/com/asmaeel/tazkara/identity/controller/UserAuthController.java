@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserAuthController {
     private final CreateUser createUser;
     private final LoginUserService loginUserService;
-    public UserAuthController(CreateUser createUser , LoginUserService loginUserService) {
+
+    public UserAuthController(CreateUser createUser, LoginUserService loginUserService) {
         this.createUser = createUser;
         this.loginUserService = loginUserService;
     }

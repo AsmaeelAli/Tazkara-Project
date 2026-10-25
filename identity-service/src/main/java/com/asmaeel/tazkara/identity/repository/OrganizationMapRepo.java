@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface OrganizationMapRepo extends JpaRepository<OrganizationMapEntity, UUID> , JpaSpecificationExecutor<OrganizationMapEntity>{
+public interface OrganizationMapRepo extends JpaRepository<OrganizationMapEntity, UUID>, JpaSpecificationExecutor<OrganizationMapEntity> {
     boolean existsByNormalizedName(String normalizedName);
 }

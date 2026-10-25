@@ -20,7 +20,7 @@ public class CreateUser {
     private final PasswordEncoder passwordEncoder;
     private final Normalizer normalizer;
 
-    public CreateUser(UserRepo userRepo, PasswordEncoder passwordEncoder , Normalizer normalizer , OrganizationMapRepo organizationMapRepo) {
+    public CreateUser(UserRepo userRepo, PasswordEncoder passwordEncoder, Normalizer normalizer, OrganizationMapRepo organizationMapRepo) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.normalizer = normalizer;
@@ -60,7 +60,7 @@ public class CreateUser {
 
     private String registerOrganizer(RegisterRequestDto request) {
 
-        if(request.organizationName() == null) {
+        if (request.organizationName() == null) {
             throw new BusinessRuleException("Organization name is required for ORGANIZER role");
         }
 
@@ -77,7 +77,7 @@ public class CreateUser {
     }
 
     private String registerAttendee(RegisterRequestDto request) {
-        if(request.organizationName() != null){
+        if (request.organizationName() != null) {
             throw new BusinessRuleException("ATTENDEE role cannot have an organization name");
         }
         userRepo.save(createNewUser(request));
@@ -86,10 +86,10 @@ public class CreateUser {
 
     private UserEntity createNewUser(RegisterRequestDto request) {
         return new UserEntity(
-              request.name(),
-              passwordEncoder.encode(request.password()),
-              normalizer.normalize(request.email()),
-              request.role()
+                request.name(),
+                passwordEncoder.encode(request.password()),
+                normalizer.normalize(request.email()),
+                request.role()
         );
     }
 }
