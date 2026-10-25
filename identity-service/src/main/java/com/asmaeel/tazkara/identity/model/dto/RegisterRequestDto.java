@@ -1,32 +1,28 @@
 package com.asmaeel.tazkara.identity.model.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import com.asmaeel.tazkara.identity.common.Roles;
+import jakarta.validation.constraints.*;
 
 public record RegisterRequestDto(
 
-        @NotBlank
-        @Size(min = 3, max = 30)
-        @Pattern(
-                regexp = "^[\\p{L}][\\p{L} ]*$",
-                message = "Name must contain only letters and spaces, and must start with a letter"
-        )
+        @NotBlank(message = "name is required")
+        @Pattern(regexp = "^\\p{L}[\\p{L} '\\-]*\\p{L}{1,18}\\p{L}$",message = "name must contain only letters, spaces, hyphens or apostrophes")
         String name,
 
-        @NotBlank
+        @NotBlank(message = "email is required")
         @Email
+        @Size(max = 50)
         String email,
 
-        @NotBlank
-        @Size(min = 8, message = "Password must be at least 8 characters")
+        @Size(min = 8, max = 72, message = "password must contain at least 8 characters")
+        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$",message = "password must contain at least one letter and one digit")
         String password,
 
-        @Pattern(
-                regexp = "^[a-zA-Z0-9]{1,30}$",
-                message = "Organization name must contain only letters and numbers, without spaces"
-        )
+        @NotNull(message = "role is required and must be ATTENDEE or ORGANIZER")
+        Roles role,
+
+        @Pattern(regexp = "^[\\p{L}\\p{N}][\\p{L}\\p{N} ]{1,28}[\\p{L}\\p{N}]$",
+                message = "organization name must contain at least 3 characters: letters, digits and spaces")
         String organizationName
 ) {
 }

@@ -3,6 +3,7 @@ package com.asmaeel.tazkara.identity.model.entity;
 import com.asmaeel.tazkara.identity.common.Roles;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +12,7 @@ import java.util.UUID;
 @Setter
 @Getter
 @Entity
-@Table(name = "USER")
+@Table(name = "USERS")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -21,9 +22,6 @@ public class UserEntity {
     @Column(nullable = false)
     String name;
 
-    @Column(name = "organization_name",unique = true)
-    String organizationName;
-
     @NotBlank
     @Column(nullable = false)
     String password;
@@ -32,7 +30,7 @@ public class UserEntity {
     @Column(nullable = false, unique = true)
     String email;
 
-    @NotBlank
+    @NotNull
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     Roles role;
@@ -42,14 +40,11 @@ public class UserEntity {
     public UserEntity() {
     }
 
-    public UserEntity(UUID id, String name, String organizationName, String password, String email, Roles role) {
-        this.id = id;
+    public UserEntity(String name, String password, String email, Roles role) {
         this.name = name;
-        this.organizationName = organizationName;
         this.password = password;
         this.email = email;
         this.role = role;
         this.enabled = true;
     }
-
 }

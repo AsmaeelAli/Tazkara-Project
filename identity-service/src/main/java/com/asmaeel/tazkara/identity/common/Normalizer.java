@@ -5,11 +5,11 @@ import org.springframework.stereotype.Component;
 import java.util.Locale;
 
 @Component
-public class EmailNormalizer {
+public class Normalizer {
 
-    public String normalize(String email) {
-        return email == null
+    public String normalize(String text) {
+        return text == null
                 ? null
-                : email.trim().toLowerCase(Locale.ROOT);
+                : text.trim().toLowerCase(Locale.ROOT);
     }
 }

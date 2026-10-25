@@ -6,7 +6,10 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
+import java.util.Optional;
 
 @Repository
 public interface UserRepo extends JpaRepository<UserEntity, UUID> , JpaSpecificationExecutor<UserEntity> {
+    boolean existsByEmail(String email);
+    Optional<UserEntity> findByEmail(String email);
 }
