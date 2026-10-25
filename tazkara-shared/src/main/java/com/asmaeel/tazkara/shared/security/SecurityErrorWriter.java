@@ -1,4 +1,4 @@
-package com.asmaeel.tazkara.identity.security.jwt.entrypoint;
+package com.asmaeel.tazkara.shared.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;

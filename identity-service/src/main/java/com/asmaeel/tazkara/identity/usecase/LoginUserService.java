@@ -1,4 +1,4 @@
-package com.asmaeel.tazkara.identity.security;
+package com.asmaeel.tazkara.identity.usecase;
 
 import com.asmaeel.tazkara.identity.common.Normalizer;
 import com.asmaeel.tazkara.identity.model.dto.LoginRequestDto;

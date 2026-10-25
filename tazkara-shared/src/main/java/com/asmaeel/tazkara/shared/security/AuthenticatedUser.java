@@ -1,4 +1,4 @@
-package com.asmaeel.tazkara.identity.security.jwt;
+package com.asmaeel.tazkara.shared.security;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
