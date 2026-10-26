@@ -1,4 +1,4 @@
-package com.asmaeel.tazkara.identity.model.dto;
+package com.asmaeel.tazkara.shared.exception;
 
 public record MessageResponse(String message) {
 }

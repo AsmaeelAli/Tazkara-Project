@@ -1,9 +1,9 @@
-package com.asmaeel.tazkara.identity.excptions;
+package com.asmaeel.tazkara.shared.exception;
 
-import com.asmaeel.tazkara.identity.model.dto.MessageResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -26,10 +26,21 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)//400
-    public MessageResponse badRequest(IllegalArgumentException e) {
-        return new MessageResponse(e.getMessage());
+    @ResponseStatus(HttpStatus.BAD_REQUEST)// 400
+    public MessageResponse handleBadRequest(IllegalArgumentException e) {
+        return new MessageResponse("Bad Request");
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)//400
+    public MessageResponse handleValidation(MethodArgumentNotValidException e) {
+        String message = e.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+        return new MessageResponse(message);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)// 403
+    public  MessageResponse forbidden(ForbiddenException e) {return new MessageResponse(e.getMessage());}
 
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)//404

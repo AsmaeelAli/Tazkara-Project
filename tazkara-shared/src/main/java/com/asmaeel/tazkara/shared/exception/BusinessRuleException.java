@@ -1,4 +1,4 @@
-package com.asmaeel.tazkara.identity.excptions;
+package com.asmaeel.tazkara.shared.exception;
 
 public class BusinessRuleException extends RuntimeException {
     public BusinessRuleException(String message) {
