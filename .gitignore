@@ -12,6 +12,7 @@
 
 # Environment variables and secrets
 .env
+test.text
 
 # OS files
 .DS_Store
