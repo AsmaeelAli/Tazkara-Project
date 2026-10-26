@@ -21,7 +21,8 @@ public record RegisterRequestDto(
         @NotNull(message = "role is required and must be ATTENDEE or ORGANIZER")
         Roles role,
 
-        @Pattern(regexp = "^[\\p{L}\\p{N}][\\p{L}\\p{N} ]{1,28}[\\p{L}\\p{N}]$",
+        @NotNull
+        @Pattern(regexp = "^(?:[\\p{L}\\p{N}][\\p{L}\\p{N} ]{1,28}[\\p{L}\\p{N}]|)$",
                 message = "organization name must contain at least 3 characters: letters, digits and spaces")
         String organizationName
 ) {

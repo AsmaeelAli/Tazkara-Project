@@ -16,26 +16,28 @@ import java.util.UUID;
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    private UUID id;
 
     @NotBlank
     @Column(nullable = false)
-    String name;
+    private String name;
 
     @NotBlank
     @Column(nullable = false)
-    String password;
+    private String password;
 
     @NotBlank
     @Column(nullable = false, unique = true)
-    String email;
+    private String email;
 
     @NotNull
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    Roles role;
+    private Roles role;
 
-    boolean enabled;
+
+    @Column(nullable = false)
+    private boolean enabled;
 
     public UserEntity() {
     }

@@ -16,19 +16,19 @@ public class OrganizationMapEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    private UUID id;
 
     @NotNull
     @Column(name = "user-id", nullable = false)
-    UUID userId;
+    private UUID userId;
 
     @NotBlank
     @Column(name = "original_name", nullable = false)
-    String originalName;
+    private String originalName;
 
     @NotBlank
     @Column(name = "normalized-name", nullable = false, unique = true)
-    String normalizedName;
+    private String normalizedName;
 
     public OrganizationMapEntity() {
     }
