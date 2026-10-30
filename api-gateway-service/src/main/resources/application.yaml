@@ -1,12 +1,35 @@
 spring:
   application:
     name: api-gateway-service
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: identity-auth
+              uri: http://identity-service:8081
+              predicates:
+                - Path=/auth/**
+
+            - id: event-management
+              uri: http://event-service:8082
+              predicates:
+                - Path=/api/events,/api/events/**
+
+            - id: public-events
+              uri: http://event-service:8082
+              predicates:
+                - Path=/api/public/events,/api/public/events/**
+
+            - id: ticket-types
+              uri: http://event-service:8082
+              predicates:
+                - Path=/api/tickets,/api/tickets/**
+
+            - id: identity-api
+              uri: http://identity-service:8081
+              predicates:
+                - Path=/api,/api/**
 
 server:
   port: 8080
-
-logging:
-  level:
-    org:
-      springframework:
-        security=DEBUG:
