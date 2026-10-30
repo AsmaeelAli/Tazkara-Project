@@ -1,14 +1,14 @@
 package com.asmaeel.tazkara.identity.usecase;
 
 import com.asmaeel.tazkara.identity.common.Normalizer;
-import com.asmaeel.tazkara.shared.exception.BusinessRuleException;
-import com.asmaeel.tazkara.shared.exception.ConflictException;
 import com.asmaeel.tazkara.identity.model.dto.RegisterRequestDto;
 import com.asmaeel.tazkara.identity.model.dto.RegisterResponseDto;
 import com.asmaeel.tazkara.identity.model.entity.OrganizationMapEntity;
 import com.asmaeel.tazkara.identity.model.entity.UserEntity;
 import com.asmaeel.tazkara.identity.repository.OrganizationMapRepo;
 import com.asmaeel.tazkara.identity.repository.UserRepo;
+import com.asmaeel.tazkara.shared.exception.BusinessRuleException;
+import com.asmaeel.tazkara.shared.exception.ConflictException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,7 +81,7 @@ public class CreateUser {
             throw new BusinessRuleException("ATTENDEE role cannot have an organization name");
         }
         userRepo.save(createNewUser(request));
-        return null;
+        return "";
     }
 
     private UserEntity createNewUser(RegisterRequestDto request) {
