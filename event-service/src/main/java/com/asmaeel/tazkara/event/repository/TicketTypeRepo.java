@@ -7,11 +7,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
 public interface TicketTypeRepo extends JpaRepository<TicketTypeEntity, UUID>,
         JpaSpecificationExecutor<TicketTypeEntity> {
+
+    List<TicketTypeEntity> findByEventIdIn(Collection<UUID> eventIds);
+
+    List<TicketTypeEntity> findAllByEventId(UUID eventId);
 
     boolean existsByEventIdAndName(UUID eventId,String name);
 

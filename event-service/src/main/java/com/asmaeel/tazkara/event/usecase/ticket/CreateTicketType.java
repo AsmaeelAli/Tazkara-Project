@@ -1,8 +1,8 @@
 package com.asmaeel.tazkara.event.usecase.ticket;
 
 import com.asmaeel.tazkara.event.common.EventStatus;
-import com.asmaeel.tazkara.event.model.dto.TicketResponseDto;
 import com.asmaeel.tazkara.event.model.dto.TicketRequestDto;
+import com.asmaeel.tazkara.event.model.dto.TicketResponseDto;
 import com.asmaeel.tazkara.event.model.entity.EventEntity;
 import com.asmaeel.tazkara.event.model.entity.TicketTypeEntity;
 import com.asmaeel.tazkara.event.repository.TicketTypeRepo;
@@ -52,7 +52,6 @@ public class CreateTicketType {
         ticketRepo.save(ticket);
 
         return new TicketResponseDto(
-                ticket.getEventId(),
                 ticket.getName(),
                 ticket.getPrice(),
                 ticket.getQuantity()

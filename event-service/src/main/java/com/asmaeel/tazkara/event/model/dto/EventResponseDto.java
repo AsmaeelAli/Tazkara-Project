@@ -2,7 +2,8 @@ package com.asmaeel.tazkara.event.model.dto;
 
 import com.asmaeel.tazkara.event.common.EventStatus;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public record EventResponseDto(
@@ -11,7 +12,8 @@ public record EventResponseDto(
         String description,
         String venue,
         String city,
-        LocalDateTime startDateTime,
-        EventStatus status
+        Instant startDateTime,
+        EventStatus status,
+        List<TicketResponseDto> tickets
 ) {
 }
