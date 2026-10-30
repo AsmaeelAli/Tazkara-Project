@@ -99,6 +99,7 @@ public class CreateEventService {
 
         return ticketTypeList.stream()
                 .map(ticket -> new TicketTypeResponseDto(
+                        ticket.getId(),
                         ticket.getName(),
                         ticket.getPrice(),
                         ticket.getQuantity()

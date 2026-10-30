@@ -3,9 +3,11 @@ package com.asmaeel.tazkara.event.controller;
 import com.asmaeel.tazkara.event.common.EventStatus;
 import com.asmaeel.tazkara.event.model.dto.CreateEventRequestDto;
 import com.asmaeel.tazkara.event.model.dto.EventResponseDto;
+import com.asmaeel.tazkara.event.model.dto.UpdateEventRequestDto;
 import com.asmaeel.tazkara.event.usecase.event.CreateEventService;
 import com.asmaeel.tazkara.event.usecase.event.ListMyEventsService;
 import com.asmaeel.tazkara.event.usecase.event.PublishEventService;
+import com.asmaeel.tazkara.event.usecase.event.UpdateDraftEventService;
 import com.asmaeel.tazkara.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +22,17 @@ public class EventController {
     private final ListMyEventsService listMyEventsService;
     private final CreateEventService createEventService;
     private final PublishEventService publishEventService;
+    private final UpdateDraftEventService updateDraftEventService;
 
-    public EventController(CreateEventService createEventService, ListMyEventsService listMyEventsService, PublishEventService publishEventService) {
+    public EventController(CreateEventService createEventService,
+                           ListMyEventsService listMyEventsService,
+                           PublishEventService publishEventService,
+                           UpdateDraftEventService updateDraftEventService) {
+
         this.createEventService = createEventService;
         this.listMyEventsService = listMyEventsService;
         this.publishEventService = publishEventService;
+        this.updateDraftEventService = updateDraftEventService;
     }
 
     @PostMapping
@@ -41,6 +49,12 @@ public class EventController {
     @PostMapping("/{eventId}/cancel")
     public ResponseEntity<String> cancelEvent(@PathVariable UUID eventId) {
         return null;
+    }
+
+
+    @PutMapping("/{eventId}")
+    public EventResponseDto updateEvent(@PathVariable UUID eventId,@RequestBody UpdateEventRequestDto request) {
+        return updateDraftEventService.execute(eventId,request);
     }
 
     @GetMapping()

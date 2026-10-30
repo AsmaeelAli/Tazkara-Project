@@ -52,6 +52,7 @@ public class CreateTicketTypeService {
         ticketRepo.save(ticket);
 
         return new TicketTypeResponseDto(
+                ticket.getId(),
                 ticket.getName(),
                 ticket.getPrice(),
                 ticket.getQuantity()

@@ -54,6 +54,7 @@ public class ListMyEventsService {
                 .collect(Collectors.groupingBy(
                         TicketTypeEntity::getEventId,
                         Collectors.mapping(t -> new TicketTypeResponseDto(
+                                        t.getId(),
                                         t.getName(),
                                         t.getPrice(),
                                         t.getQuantity()),
