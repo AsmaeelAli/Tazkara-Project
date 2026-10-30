@@ -8,7 +8,6 @@ import com.asmaeel.tazkara.event.model.entity.TicketTypeEntity;
 import com.asmaeel.tazkara.event.repository.EventRepo;
 import com.asmaeel.tazkara.event.repository.TicketTypeRepo;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.Instant;
@@ -20,10 +19,10 @@ public class PublishEventService {
 
     private final EventRepo eventRepo;
     private final TicketTypeRepo ticketRepo;
-    private final EventOwnershipChecker checker;
+    private final CheckEventOwnerService checker;
     private final BookingClient bookingClient;
 
-    public PublishEventService(EventRepo eventRepo, TicketTypeRepo ticketRepo, EventOwnershipChecker checker, BookingClient bookingClient) {
+    public PublishEventService(EventRepo eventRepo, TicketTypeRepo ticketRepo, CheckEventOwnerService checker, BookingClient bookingClient) {
         this.eventRepo = eventRepo;
         this.ticketRepo = ticketRepo;
         this.checker = checker;

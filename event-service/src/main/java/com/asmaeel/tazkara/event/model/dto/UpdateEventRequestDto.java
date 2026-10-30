@@ -1,15 +1,12 @@
 package com.asmaeel.tazkara.event.model.dto;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
-import java.util.List;
 
-public record EventRequestDto(
-
+public record UpdateEventRequestDto(
         @NotBlank
         @Size(max = 50)
         String title,
@@ -27,10 +24,6 @@ public record EventRequestDto(
         String city,
 
         @NotNull
-        Instant startDateTime,
-
-        @NotNull
-        @Size(min = 1, max = 5)
-        @Valid
-        List<TicketRequestDto> tickets
-) {}
+        Instant startDateTime
+) {
+}

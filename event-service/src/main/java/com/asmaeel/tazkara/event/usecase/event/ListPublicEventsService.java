@@ -1,29 +1,15 @@
 package com.asmaeel.tazkara.event.usecase.event;
 
-import com.asmaeel.tazkara.event.common.EventStatus;
-import com.asmaeel.tazkara.event.model.dto.EventResponseDto;
-import com.asmaeel.tazkara.event.model.dto.TicketResponseDto;
-import com.asmaeel.tazkara.event.model.entity.EventEntity;
-import com.asmaeel.tazkara.event.repository.EventRepo;
-import com.asmaeel.tazkara.event.repository.TicketTypeRepo;
-import com.asmaeel.tazkara.shared.dto.PageResponse;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
 
 @Service
-public class PublicBrowseEvents {
+public class ListPublicEventsService {
 //
 //    private static final int MAX_SIZE = 50;
 //    private final EventRepo eventRepo;
 //    private final TicketTypeRepo ticketRepo;
 //
-//    public PublicBrowseEvents(EventRepo eventRepo, TicketTypeRepo ticketRepo) {
+//    public ListPublicEventsService(EventRepo eventRepo, TicketTypeRepo ticketRepo) {
 //        this.eventRepo = eventRepo;
 //        this.ticketRepo = ticketRepo;
 //    }
@@ -58,10 +44,10 @@ public class PublicBrowseEvents {
 //        Page<EventEntity> result = eventRepo.findAll(spec, pageable);   // الاستعلام الأول
 //
 //        List<UUID> ids = result.getContent().stream().map(EventEntity::getId).toList();
-//        Map<UUID, List<TicketResponseDto>> tickets = ids.isEmpty() ? Map.of()
+//        Map<UUID, List<TicketTypeResponseDto>> tickets = ids.isEmpty() ? Map.of()
 //                : ticketRepo.findByEventIdIn(ids).stream()               // الاستعلام الثاني
 //                .collect(Collectors.groupingBy(TicketTypeEntity::getEventId,
-//                        Collectors.mapping(t -> new TicketResponseDto(
+//                        Collectors.mapping(t -> new TicketTypeResponseDto(
 //                                t.getId(), t.getEventId(), t.getName(),
 //                                t.getPrice(), t.getQuantity()), Collectors.toList())));
 //
@@ -73,8 +59,8 @@ public class PublicBrowseEvents {
 //        EventEntity event = eventRepo.findOne(visible().and((r, q, cb) -> cb.equal(r.get("id"), eventId)))
 //                .orElseThrow(() -> new NoSuchElementException("Event not found"));
 //
-//        List<TicketResponseDto> tickets = ticketRepo.findByEventId(eventId).stream()
-//                .map(t -> new TicketResponseDto(t.getId(), t.getEventId(), t.getName(),
+//        List<TicketTypeResponseDto> tickets = ticketRepo.findByEventId(eventId).stream()
+//                .map(t -> new TicketTypeResponseDto(t.getId(), t.getEventId(), t.getName(),
 //                        t.getPrice(), t.getQuantity()))
 //                .toList();
 //        return toDto(event, tickets);
@@ -89,7 +75,7 @@ public class PublicBrowseEvents {
 //                cb.greaterThan(root.get("startDateTime"), now));
 //    }
 //
-//    private EventResponseDto toDto(EventEntity e, List<TicketResponseDto> tickets) {
+//    private EventResponseDto toDto(EventEntity e, List<TicketTypeResponseDto> tickets) {
 //        return new EventResponseDto(e.getId(), e.getTitle(), e.getDescription(), e.getVenue(),
 //                e.getCity(), e.getStartDateTime(), e.getStatus(), tickets);
 //    }

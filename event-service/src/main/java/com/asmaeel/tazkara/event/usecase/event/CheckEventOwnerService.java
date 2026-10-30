@@ -10,11 +10,11 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Component
-public class EventOwnershipChecker {
+public class CheckEventOwnerService {
 
     private final EventRepo eventRepo;
 
-    public EventOwnershipChecker(EventRepo eventRepo) {
+    public CheckEventOwnerService(EventRepo eventRepo) {
         this.eventRepo = eventRepo;
     }
 

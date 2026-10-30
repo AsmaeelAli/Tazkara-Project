@@ -14,6 +14,6 @@ public record EventResponseDto(
         String city,
         Instant startDateTime,
         EventStatus status,
-        List<TicketResponseDto> tickets
+        List<TicketTypeResponseDto> tickets
 ) {
 }

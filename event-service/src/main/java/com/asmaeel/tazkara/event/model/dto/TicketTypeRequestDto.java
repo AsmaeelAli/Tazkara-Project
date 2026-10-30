@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
-public record TicketRequestDto(
+public record TicketTypeRequestDto(
         @NotBlank
         String name,
 
