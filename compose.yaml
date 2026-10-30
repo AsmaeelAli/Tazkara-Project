@@ -87,6 +87,7 @@ services:
       API_SERVICE_KEY: ${API_SERVICE_KEY:?API_SERVICE_KEY is required}
       BATCH_SIZE: ${BATCH_SIZE:?BATCH_SIZE is required}
       EVENT_BASE_URL: ${EVENT_BASE_URL:?EVENT_BASE_URL is required}
+      REFERENCE_RANDOM_SIZE: ${REFERENCE_RANDOM_SIZE:?REFERENCE_RANDOM_SIZE is required}
     depends_on:
       postgres:
         condition: service_healthy

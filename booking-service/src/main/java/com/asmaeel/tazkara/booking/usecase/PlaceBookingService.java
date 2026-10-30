@@ -7,11 +7,11 @@ import com.asmaeel.tazkara.booking.repository.BookingRepo;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CreateBooking {
+public class PlaceBookingService {
     private final BookingRepo bookingRepo;
     private final TicketRepo ticketRepo;
 
-    public CreateBooking(BookingRepo bookingRepo, TicketRepo ticketRepo) {
+    public PlaceBookingService(BookingRepo bookingRepo, TicketRepo ticketRepo) {
         this.bookingRepo = bookingRepo;
         this.ticketRepo = ticketRepo;
     }
