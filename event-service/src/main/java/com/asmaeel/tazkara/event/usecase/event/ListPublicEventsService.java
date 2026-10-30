@@ -1,82 +1,60 @@
 package com.asmaeel.tazkara.event.usecase.event;
 
+import com.asmaeel.tazkara.event.model.dto.PublicEventSummaryResponseDto;
+import com.asmaeel.tazkara.event.model.entity.EventEntity;
+import com.asmaeel.tazkara.event.repository.EventRepo;
+import com.asmaeel.tazkara.event.repository.EventSpecifications;
+import com.asmaeel.tazkara.event.repository.TicketTypeRepo;
+import com.asmaeel.tazkara.shared.dto.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.List;
 
 @Service
 public class ListPublicEventsService {
-//
-//    private static final int MAX_SIZE = 50;
-//    private final EventRepo eventRepo;
-//    private final TicketTypeRepo ticketRepo;
-//
-//    public ListPublicEventsService(EventRepo eventRepo, TicketTypeRepo ticketRepo) {
-//        this.eventRepo = eventRepo;
-//        this.ticketRepo = ticketRepo;
-//    }
-//
-//    @Transactional(readOnly = true)
-//    public PageResponse<EventResponseDto> execute(String city, Instant from, Instant to,
-//                                               String keyword, int page, int size) {
-//
-//        Specification<EventEntity> spec = visible();
-//
-//        if (city != null && !city.isBlank()) {
-//            spec = spec.and((root, q, cb) ->
-//                    cb.equal(cb.lower(root.get("city")), city.trim().toLowerCase()));
-//        }
-//        if (keyword != null && !keyword.isBlank()) {
-//            spec = spec.and((root, q, cb) ->
-//                    cb.like(cb.lower(root.get("title")), "%" + keyword.trim().toLowerCase() + "%"));
-//        }
-//        if (from != null) {
-//            spec = spec.and((root, q, cb)
-//                    -> cb.greaterThanOrEqualTo(root.get("startDateTime"), from));
-//        }
-//
-//        if (to != null) {
-//            spec = spec.and((root, q, cb) -> cb.lessThanOrEqualTo(root.get("startDateTime"), to));
-//        }
-//
-//        Pageable pageable = PageRequest.of(Math.max(page, 0),
-//                Math.min(Math.max(size, 1), MAX_SIZE),
-//                Sort.by("startDateTime").ascending());
-//
-//        Page<EventEntity> result = eventRepo.findAll(spec, pageable);   // الاستعلام الأول
-//
-//        List<UUID> ids = result.getContent().stream().map(EventEntity::getId).toList();
-//        Map<UUID, List<TicketTypeResponseDto>> tickets = ids.isEmpty() ? Map.of()
-//                : ticketRepo.findByEventIdIn(ids).stream()               // الاستعلام الثاني
-//                .collect(Collectors.groupingBy(TicketTypeEntity::getEventId,
-//                        Collectors.mapping(t -> new TicketTypeResponseDto(
-//                                t.getId(), t.getEventId(), t.getName(),
-//                                t.getPrice(), t.getQuantity()), Collectors.toList())));
-//
-//        return PageResponse.from(result.map(e -> toDto(e, tickets.getOrDefault(e.getId(), List.of()))));
-//    }
-//
-//    @Transactional(readOnly = true)
-//    public EventResponseDto details(UUID eventId) {
-//        EventEntity event = eventRepo.findOne(visible().and((r, q, cb) -> cb.equal(r.get("id"), eventId)))
-//                .orElseThrow(() -> new NoSuchElementException("Event not found"));
-//
-//        List<TicketTypeResponseDto> tickets = ticketRepo.findByEventId(eventId).stream()
-//                .map(t -> new TicketTypeResponseDto(t.getId(), t.getEventId(), t.getName(),
-//                        t.getPrice(), t.getQuantity()))
-//                .toList();
-//        return toDto(event, tickets);
-//    }
-//
-//
-//    private Specification<EventEntity> visible() {
-//        Instant now = Instant.now();
-//        return (root, q, cb)
-//                -> cb.and(
-//                cb.equal(root.get("status"), EventStatus.PUBLISHED),
-//                cb.greaterThan(root.get("startDateTime"), now));
-//    }
-//
-//    private EventResponseDto toDto(EventEntity e, List<TicketTypeResponseDto> tickets) {
-//        return new EventResponseDto(e.getId(), e.getTitle(), e.getDescription(), e.getVenue(),
-//                e.getCity(), e.getStartDateTime(), e.getStatus(), tickets);
-//    }
+
+    private final EventRepo eventRepo;
+    private final TicketTypeRepo ticketRepo;
+
+    public ListPublicEventsService(
+            EventRepo eventRepo,
+            TicketTypeRepo ticketRepo
+    ) {
+        this.eventRepo = eventRepo;
+        this.ticketRepo = ticketRepo;
+    }
+
+    public PageResponse<PublicEventSummaryResponseDto> execute(int page, int size, String city, Instant from, Instant to, String keyword) {
+
+        Instant now = Instant.now();
+
+        Specification<EventEntity> specification =
+                EventSpecifications.publicUpcomingEvents(now, city, from, to, keyword);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "startDateTime")
+        );
+
+        Page<EventEntity> events = eventRepo.findAll(specification, pageable);
+
+        Page<PublicEventSummaryResponseDto> mappedEvents =
+                events.map(event -> new PublicEventSummaryResponseDto(
+                        event.getId(),
+                        event.getTitle(),
+                        event.getCity(),
+                        event.getVenue(),
+                        event.getStartDateTime(),
+                        List.of()
+                ));
+
+        return PageResponse.from(mappedEvents);
+    }
 }
+
+
+
