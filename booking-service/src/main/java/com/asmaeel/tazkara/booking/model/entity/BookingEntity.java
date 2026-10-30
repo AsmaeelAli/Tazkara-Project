@@ -3,6 +3,7 @@ package com.asmaeel.tazkara.booking.model.entity;
 import com.asmaeel.tazkara.booking.common.BookingStatus;
 import com.asmaeel.tazkara.booking.common.CancellationReason;
 import com.asmaeel.tazkara.shared.exception.BusinessRuleException;
+import com.asmaeel.tazkara.shared.exception.InternalSystemException;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -62,8 +63,8 @@ public class BookingEntity {
     @Column(name = "confirmed_at")
     private Instant confirmedAt;
 
-    @Column()
-    private AtomicInteger version;
+    @Version
+    private Long version;
 
     protected BookingEntity() {
     }

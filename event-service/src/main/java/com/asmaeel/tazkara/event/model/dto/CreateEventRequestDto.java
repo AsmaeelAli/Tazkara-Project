@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.util.List;
 
-public record EventRequestDto(
+public record CreateEventRequestDto(
 
         @NotBlank
         @Size(max = 50)
@@ -32,5 +32,5 @@ public record EventRequestDto(
         @NotNull
         @Size(min = 1, max = 5)
         @Valid
-        List<TicketRequestDto> tickets
+        List<TicketTypeRequestDto> tickets
 ) {}

@@ -19,6 +19,8 @@ public interface TicketTypeRepo extends JpaRepository<TicketTypeEntity, UUID>,
 
     List<TicketTypeEntity> findAllByEventId(UUID eventId);
 
+    List<TicketTypeEntity> findAllByEventIdAndIdIn(UUID eventId, Collection<UUID> ids);
+
     boolean existsByEventIdAndName(UUID eventId,String name);
 
     @Query("""

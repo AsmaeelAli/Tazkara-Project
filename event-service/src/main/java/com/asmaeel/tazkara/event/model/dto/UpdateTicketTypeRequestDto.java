@@ -3,8 +3,13 @@ package com.asmaeel.tazkara.event.model.dto;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
-public record TicketRequestDto(
+public record UpdateTicketTypeRequestDto(
+
+        @NotNull
+        UUID id,
+
         @NotBlank
         String name,
 
@@ -16,4 +21,4 @@ public record TicketRequestDto(
         @Min(1)
         @Max(10000)
         Integer quantity
-) {}
+){}

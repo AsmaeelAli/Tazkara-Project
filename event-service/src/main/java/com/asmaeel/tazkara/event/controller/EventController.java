@@ -1,11 +1,13 @@
 package com.asmaeel.tazkara.event.controller;
 
 import com.asmaeel.tazkara.event.common.EventStatus;
-import com.asmaeel.tazkara.event.model.dto.EventRequestDto;
+import com.asmaeel.tazkara.event.model.dto.CreateEventRequestDto;
 import com.asmaeel.tazkara.event.model.dto.EventResponseDto;
-import com.asmaeel.tazkara.event.usecase.event.CreateEvent;
-import com.asmaeel.tazkara.event.usecase.event.GetMyEvents;
+import com.asmaeel.tazkara.event.model.dto.UpdateEventRequestDto;
+import com.asmaeel.tazkara.event.usecase.event.CreateEventService;
+import com.asmaeel.tazkara.event.usecase.event.ListMyEventsService;
 import com.asmaeel.tazkara.event.usecase.event.PublishEventService;
+import com.asmaeel.tazkara.event.usecase.event.UpdateDraftEventService;
 import com.asmaeel.tazkara.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -17,19 +19,25 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
-    private final GetMyEvents getMyEvents;
-    private final CreateEvent createEvent;
+    private final ListMyEventsService listMyEventsService;
+    private final CreateEventService createEventService;
     private final PublishEventService publishEventService;
+    private final UpdateDraftEventService updateDraftEventService;
 
-    public EventController(CreateEvent createEvent, GetMyEvents getMyEvents, PublishEventService publishEventService) {
-        this.createEvent = createEvent;
-        this.getMyEvents = getMyEvents;
+    public EventController(CreateEventService createEventService,
+                           ListMyEventsService listMyEventsService,
+                           PublishEventService publishEventService,
+                           UpdateDraftEventService updateDraftEventService) {
+
+        this.createEventService = createEventService;
+        this.listMyEventsService = listMyEventsService;
         this.publishEventService = publishEventService;
+        this.updateDraftEventService = updateDraftEventService;
     }
 
     @PostMapping
-    public EventResponseDto newEvent(@RequestBody @Valid EventRequestDto request) {
-        return createEvent.execute(request);
+    public EventResponseDto newEvent(@RequestBody @Valid CreateEventRequestDto request) {
+        return createEventService.execute(request);
     }
 
     @PostMapping("/{eventId}/publish")
@@ -43,11 +51,17 @@ public class EventController {
         return null;
     }
 
+
+    @PutMapping("/{eventId}")
+    public EventResponseDto updateEvent(@PathVariable UUID eventId,@RequestBody UpdateEventRequestDto request) {
+        return updateDraftEventService.execute(eventId,request);
+    }
+
     @GetMapping()
     public PageResponse<EventResponseDto> myEvents(
             @RequestParam(required = false) EventStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "3") int size) {
-        return getMyEvents.execute(status, page, size);
+        return listMyEventsService.execute(status, page, size);
     }
 }

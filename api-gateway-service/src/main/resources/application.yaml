@@ -1,16 +1,25 @@
+
 spring:
   application:
     name: api-gateway-service
+
   cloud:
     gateway:
       server:
         webflux:
           routes:
+            # Identity Service
             - id: identity-auth
               uri: http://identity-service:8081
               predicates:
                 - Path=/auth/**
 
+            - id: identity-api
+              uri: http://identity-service:8081
+              predicates:
+                - Path=/api,/api/**
+
+            # Event Service
             - id: event-management
               uri: http://event-service:8082
               predicates:
@@ -26,10 +35,40 @@ spring:
               predicates:
                 - Path=/api/tickets,/api/tickets/**
 
-            - id: identity-api
+            # Swagger Documentation
+            - id: identity-swagger
               uri: http://identity-service:8081
               predicates:
-                - Path=/api,/api/**
+                - Path=/identity/v3/api-docs
+              filters:
+                - SetPath=/v3/api-docs
+
+            - id: event-swagger
+              uri: http://event-service:8082
+              predicates:
+                - Path=/event/v3/api-docs
+              filters:
+                - SetPath=/v3/api-docs
+
+            - id: booking-swagger
+              uri: http://booking-service:8083
+              predicates:
+                - Path=/booking/v3/api-docs
+              filters:
+                - SetPath=/v3/api-docs
 
 server:
   port: 8080
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: Identity Service
+        url: /identity/v3/api-docs
+
+      - name: Event Service
+        url: /event/v3/api-docs
+
+      - name: Booking Service
+        url: /booking/v3/api-docs

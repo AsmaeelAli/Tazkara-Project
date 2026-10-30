@@ -1,12 +1,12 @@
 package com.asmaeel.tazkara.event.usecase.ticket;
 
 import com.asmaeel.tazkara.event.common.EventStatus;
-import com.asmaeel.tazkara.event.model.dto.TicketRequestDto;
-import com.asmaeel.tazkara.event.model.dto.TicketResponseDto;
+import com.asmaeel.tazkara.event.model.dto.TicketTypeRequestDto;
+import com.asmaeel.tazkara.event.model.dto.TicketTypeResponseDto;
 import com.asmaeel.tazkara.event.model.entity.EventEntity;
 import com.asmaeel.tazkara.event.model.entity.TicketTypeEntity;
 import com.asmaeel.tazkara.event.repository.TicketTypeRepo;
-import com.asmaeel.tazkara.event.usecase.event.EventOwnershipChecker;
+import com.asmaeel.tazkara.event.usecase.event.CheckEventOwnerService;
 import com.asmaeel.tazkara.shared.exception.BusinessRuleException;
 import com.asmaeel.tazkara.shared.exception.ConflictException;
 import org.springframework.stereotype.Service;
@@ -15,18 +15,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
-public class CreateTicketType {
+public class CreateTicketTypeService {
 
     private final TicketTypeRepo ticketRepo;
-    private final EventOwnershipChecker checker;
+    private final CheckEventOwnerService checker;
 
-    public CreateTicketType(EventOwnershipChecker checker , TicketTypeRepo ticketRepo) {
+    public CreateTicketTypeService(CheckEventOwnerService checker , TicketTypeRepo ticketRepo) {
         this.ticketRepo = ticketRepo;
         this.checker = checker;
     }
 
     @Transactional
-    public TicketResponseDto execute(UUID eventId, TicketRequestDto request) {
+    public TicketTypeResponseDto execute(UUID eventId, TicketTypeRequestDto request) {
 
         EventEntity event = checker.execute(eventId);
 
@@ -51,7 +51,8 @@ public class CreateTicketType {
 
         ticketRepo.save(ticket);
 
-        return new TicketResponseDto(
+        return new TicketTypeResponseDto(
+                ticket.getId(),
                 ticket.getName(),
                 ticket.getPrice(),
                 ticket.getQuantity()
