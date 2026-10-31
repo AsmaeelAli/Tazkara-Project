@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/internal")
+@RequestMapping("/internal/bookins")
 public class InternalTicketController {
 
     private final CreateTicketsService createTicketsService;

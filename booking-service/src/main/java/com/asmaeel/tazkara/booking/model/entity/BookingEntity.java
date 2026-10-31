@@ -34,9 +34,6 @@ public class BookingEntity {
     @Column(nullable = false, unique = true, length = 16)
     private String reference;
 
-    @Column(name = "attendee_email", nullable = false)
-    private String attendeeEmail;
-
     @Column(name = "event_start_time", nullable = false)
     private Instant eventStartTime;
 
@@ -63,6 +60,9 @@ public class BookingEntity {
     @Column(name = "confirmed_at")
     private Instant confirmedAt;
 
+    @Column(nullable = false)
+    private Integer quantity;
+
     @Version
     private Long version;
 
@@ -70,30 +70,26 @@ public class BookingEntity {
     }
 
     public BookingEntity(UUID id, UUID eventId, UUID attendeeId,
-                         String eventTitle, String reference,
-                         String attendeeEmail, Instant eventStartTime,
-                         BigDecimal totalAmount, Instant holdExpiresAt, Instant createdAt) {
+                         String eventTitle, String reference, Instant eventStartTime,
+                         BigDecimal totalAmount, Instant holdExpiresAt, Instant createdAt ,Integer quantity) {
         this.id = id;
         this.eventId = eventId;
         this.attendeeId = attendeeId;
         this.eventTitle = eventTitle;
         this.reference = reference;
-        this.attendeeEmail = attendeeEmail;
         this.eventStartTime = eventStartTime;
         this.totalAmount = totalAmount;
         this.holdExpiresAt = holdExpiresAt;
         this.createdAt = createdAt;
+        this.quantity = quantity;
 
-        // Free booking (total is zero) is confirmed immediately
-        if (totalAmount.compareTo(BigDecimal.ZERO) == 0) {
+        if (totalAmount.compareTo(BigDecimal.ZERO) == 0.00) {
             this.status = BookingStatus.CONFIRMED;
             this.confirmedAt = createdAt;
         } else {
             this.status = BookingStatus.PENDING_PAYMENT;
         }
     }
-
-    // ---------- Domain behaviour ----------
 
     public void confirm(Instant now) {
         if (status != BookingStatus.PENDING_PAYMENT) {
@@ -126,9 +122,6 @@ public class BookingEntity {
         this.cancellationReason = reason;
     }
 
-    // ---------- Getters only (no setters on purpose) ----------
-
-
     public UUID getId() {
         return id;
     }
@@ -147,10 +140,6 @@ public class BookingEntity {
 
     public String getReference() {
         return reference;
-    }
-
-    public String getAttendeeEmail() {
-        return attendeeEmail;
     }
 
     public Instant getEventStartTime() {
@@ -185,4 +174,7 @@ public class BookingEntity {
         return confirmedAt;
     }
 
+    public Integer getQuantity() {
+        return quantity;
+    }
 }

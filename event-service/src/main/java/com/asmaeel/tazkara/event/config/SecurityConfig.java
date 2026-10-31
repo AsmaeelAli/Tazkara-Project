@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/events/public").permitAll()
+                        .requestMatchers("/internal/**").permitAll()
                         .requestMatchers("/api/events/**", "/api/tickets/**").hasRole("ORGANIZER")
                         .anyRequest().authenticated()
                 )

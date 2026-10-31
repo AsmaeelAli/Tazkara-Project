@@ -51,10 +51,12 @@ public class PublishEventService {
 
         EventPublicationRequestDto pubReqDto = new EventPublicationRequestDto(
                 event.getId(),
+                event.getTitle(),
+                event.getStartDateTime(),
                 ticketsDto
         );
 
-        bookingClient.send(pubReqDto);
+        bookingClient.send(pubReqDto , "/tickets");
 
 
         event.publish();

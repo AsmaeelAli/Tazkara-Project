@@ -1,16 +1,24 @@
 package com.asmaeel.tazkara.booking.model.dto;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
 public record EventPublicationRequestDto(
         @NotNull
         UUID eventId,
+
+        @NotBlank
+        String eventTitle,
+
+        @NotNull
+        Instant eventStartTime,
 
         @NotEmpty
         @Valid
