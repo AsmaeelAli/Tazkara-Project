@@ -3,13 +3,11 @@ package com.asmaeel.tazkara.booking.model.entity;
 import com.asmaeel.tazkara.booking.common.BookingStatus;
 import com.asmaeel.tazkara.booking.common.CancellationReason;
 import com.asmaeel.tazkara.shared.exception.BusinessRuleException;
-import com.asmaeel.tazkara.shared.exception.InternalSystemException;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Entity
 @Table(name = "BOOKINGS",
@@ -95,6 +93,7 @@ public class BookingEntity {
         if (status != BookingStatus.PENDING_PAYMENT) {
             throw new BusinessRuleException("Only a booking waiting for payment can be paid");
         }
+
         if (!now.isBefore(holdExpiresAt)) {
             throw new BusinessRuleException("The payment time for this booking has passed");
         }

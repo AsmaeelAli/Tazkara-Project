@@ -89,6 +89,7 @@ services:
       EVENT_BASE_URL: ${EVENT_BASE_URL:?EVENT_BASE_URL is required}
       REFERENCE_RANDOM_SIZE: ${REFERENCE_RANDOM_SIZE:?REFERENCE_RANDOM_SIZE is required}
       BOOKING_HOLD_DURATION: ${BOOKING_HOLD_DURATION:?BOOKING_HOLD_DURATION is required}
+      BOOKING_EXPIRY_INTERVAL: ${BOOKING_EXPIRY_INTERVAL:?BOOKING_EXPIRY_INTERVAL is required}
     depends_on:
       postgres:
         condition: service_healthy

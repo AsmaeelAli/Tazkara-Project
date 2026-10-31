@@ -24,9 +24,7 @@ public interface TicketRepo extends JpaRepository<TicketEntity, UUID>{
     LIMIT :quantity
     FOR UPDATE SKIP LOCKED
     """, nativeQuery = true)
-    List<TicketEntity> lockFreeTickets(
-            UUID eventId,
-            UUID ticketTypeId,
-            int quantity
-    );
+    List<TicketEntity> lockFreeTickets(UUID eventId, UUID ticketTypeId, int quantity);
+
+    List<TicketEntity> findAllByBookingId(UUID bookingId);
 }

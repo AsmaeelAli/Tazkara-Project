@@ -1,12 +1,17 @@
 package com.asmaeel.tazkara.booking.repository;
 
+import com.asmaeel.tazkara.booking.common.BookingStatus;
 import com.asmaeel.tazkara.booking.model.entity.BookingEntity;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -15,6 +20,8 @@ public interface BookingRepo extends JpaRepository<BookingEntity, UUID> , JpaSpe
     SELECT (COALESCE((SELECT SUM(b.quantity)FROM BookingEntity b WHERE b.attendeeId = :attendeeId AND b.eventId = :eventId), 0) + :requestedQuantity) <= 6
 """)
     boolean canBook(UUID attendeeId, UUID eventId, int requestedQuantity);
+
+    Optional<BookingEntity> findByReferenceAndAttendeeId(String reference, UUID attendeeId);
 
 
     /**
@@ -38,4 +45,12 @@ public interface BookingRepo extends JpaRepository<BookingEntity, UUID> , JpaSpe
     """, nativeQuery = true)
     void lockAttendeeEvent(@Param("attendeeId") UUID attendeeId,
                            @Param("eventId") UUID eventId);
+
+    @Query("""
+            SELECT b.id FROM BookingEntity b
+            WHERE b.status = :status AND b.holdExpiresAt <= :now
+            """)
+    List<UUID> findExpiredIds(@Param("status") BookingStatus status,
+                              @Param("now") Instant now,
+                              Pageable pageable);
 }

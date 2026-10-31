@@ -7,10 +7,10 @@ import com.asmaeel.tazkara.booking.model.dto.ItemRequestDto;
 import com.asmaeel.tazkara.booking.model.entity.BookingEntity;
 import com.asmaeel.tazkara.booking.model.entity.PublishedEventEntity;
 import com.asmaeel.tazkara.booking.model.entity.PublishedTicketTypeEntity;
-import com.asmaeel.tazkara.booking.repository.PublishedTicketTypeRepo;
-import com.asmaeel.tazkara.booking.repository.PublishedEventRepo;
-import com.asmaeel.tazkara.booking.repository.TicketRepo;
 import com.asmaeel.tazkara.booking.repository.BookingRepo;
+import com.asmaeel.tazkara.booking.repository.PublishedEventRepo;
+import com.asmaeel.tazkara.booking.repository.PublishedTicketTypeRepo;
+import com.asmaeel.tazkara.booking.repository.TicketRepo;
 import com.asmaeel.tazkara.shared.exception.BusinessRuleException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,11 +21,12 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
 public class PlaceBookingService {
-    private final Duration holdDuration;
+    private final Integer holdDuration;
     private final BookingRepo bookingRepo;
     private final ReferenceGenerator generator;
     private final PublishedEventRepo publishedEventRepo;
@@ -41,7 +42,7 @@ public class PlaceBookingService {
                                BookingRepo bookingRepo, TicketRepo ticketRepo ,
                                BookingResponseMapper bookingResponseMapper,
                                HoldTicketsService holdTicketsService, ReferenceGenerator generator ,
-                               @Value("${booking.hold-duration}") Duration holdDuration) {
+                               @Value("${booking.hold-duration}") Integer holdDuration) {
 
         this.generator = generator;
         this.bookingRepo = bookingRepo;
@@ -57,7 +58,7 @@ public class PlaceBookingService {
     public BookingResponseDto execute(BookingRequestDto request) {
 
         Instant now = Instant.now();
-        Instant holdExpiresAt = now.plus(holdDuration);
+        Instant holdExpiresAt = now.plus(Duration.ofMinutes(holdDuration));
 
 
         UUID attendeeId = UUID.fromString(
@@ -65,7 +66,7 @@ public class PlaceBookingService {
 
         // 1. Validate published event
         PublishedEventEntity event = publishedEventRepo.findById(request.eventId())
-                .orElseThrow(() -> new BusinessRuleException("Event is not published"));
+                .orElseThrow(() -> new NoSuchElementException("Event is not published"));
 
         if(event.getStatus() == PublishedEventStatus.CANCELLED){
             throw new BusinessRuleException("Event has been Cancelled");
