@@ -5,8 +5,10 @@ import com.asmaeel.tazkara.shared.exception.GlobalExceptionHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Import({GlobalExceptionHandler.class, OpenApiConfig.class})
+@EnableScheduling
 @SpringBootApplication
 public class BookingServiceApplication {
 

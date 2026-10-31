@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -100,6 +101,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> unexpected(Exception e, HttpServletRequest req) {
         log.error("Unexpected error on {}", req.getRequestURI(), e);
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "An unexpected error occurred. Please try again later", req, null);
+    }
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponse> handleConcurrentUpdate(
+            ObjectOptimisticLockingFailureException e, HttpServletRequest request) {
+        log.warn("Concurrent update at {}", request.getRequestURI());
+        return build(HttpStatus.CONFLICT, "CONCURRENT_UPDATE",
+                "The booking was just updated, please try again", request, null);
     }
 
     private ResponseEntity<ErrorResponse> build(HttpStatus status, String code, String message,
