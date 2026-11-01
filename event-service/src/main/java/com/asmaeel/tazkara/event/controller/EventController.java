@@ -8,11 +8,11 @@ import com.asmaeel.tazkara.event.usecase.event.CreateEventService;
 import com.asmaeel.tazkara.event.usecase.event.ListMyEventsService;
 import com.asmaeel.tazkara.event.usecase.event.PublishEventService;
 import com.asmaeel.tazkara.event.usecase.event.UpdateDraftEventService;
+import com.asmaeel.tazkara.shared.dto.MessageResponse;
 import com.asmaeel.tazkara.shared.dto.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.util.UUID;
 
@@ -41,13 +41,13 @@ public class EventController {
     }
 
     @PostMapping("/{eventId}/publish")
-    public ResponseEntity<String> publishEvent(@PathVariable UUID eventId) {
+    public ResponseEntity<MessageResponse> publishEvent(@PathVariable UUID eventId) {
         String message = publishEventService.execute(eventId);
-        return ResponseEntity.ok(message);
+        return ResponseEntity.ok(new MessageResponse(message));
     }
 
     @PostMapping("/{eventId}/cancel")
-    public ResponseEntity<String> cancelEvent(@PathVariable UUID eventId) {
+    public ResponseEntity<MessageResponse> cancelEvent(@PathVariable UUID eventId) {
         return null;
     }
 
@@ -60,8 +60,8 @@ public class EventController {
     @GetMapping()
     public PageResponse<EventResponseDto> myEvents(
             @RequestParam(required = false) EventStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size) {
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "3") Integer size) {
         return listMyEventsService.execute(status, page, size);
     }
 }

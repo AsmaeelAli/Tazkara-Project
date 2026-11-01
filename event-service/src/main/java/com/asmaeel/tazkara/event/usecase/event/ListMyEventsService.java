@@ -33,7 +33,7 @@ public class ListMyEventsService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<EventResponseDto> execute(EventStatus status, int page, int size) {
+    public PageResponse<EventResponseDto> execute(EventStatus status, Integer page, Integer size) {
         UUID ownerId = UUID.fromString(
                 SecurityContextHolder.getContext().getAuthentication().getName());
 
