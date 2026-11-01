@@ -88,7 +88,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ServiceUnavailableException.class)
     public ResponseEntity<ErrorResponse> serviceUnavailable(HttpServletRequest req) {
-        return build(HttpStatus.SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", "An unexpected error occurred. Please try again later", req, null);
+        return build(HttpStatus.SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", "This operation is temporarily unavailable due to internal reasons. Please try again later.", req, null);
     }
 
     @ExceptionHandler(InternalSystemException.class)
