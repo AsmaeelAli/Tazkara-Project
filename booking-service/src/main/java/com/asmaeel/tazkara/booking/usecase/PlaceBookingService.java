@@ -1,9 +1,9 @@
 package com.asmaeel.tazkara.booking.usecase;
 
 import com.asmaeel.tazkara.booking.common.PublishedEventStatus;
-import com.asmaeel.tazkara.booking.model.dto.BookingChangedEventDto;
 import com.asmaeel.tazkara.booking.model.dto.BookingRequestDto;
 import com.asmaeel.tazkara.booking.model.dto.BookingResponseDto;
+import com.asmaeel.tazkara.booking.model.dto.BookingSenderDto;
 import com.asmaeel.tazkara.booking.model.dto.ItemRequestDto;
 import com.asmaeel.tazkara.booking.model.entity.BookingEntity;
 import com.asmaeel.tazkara.booking.model.entity.BookingItemEntity;
@@ -12,6 +12,7 @@ import com.asmaeel.tazkara.booking.repository.BookingRepo;
 import com.asmaeel.tazkara.booking.repository.PublishedEventRepo;
 import com.asmaeel.tazkara.booking.repository.PublishedTicketTypeRepo;
 import com.asmaeel.tazkara.shared.exception.BusinessRuleException;
+import com.asmaeel.tazkara.shared.security.AuthenticatedUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,12 +42,13 @@ public class PlaceBookingService {
     private final ConfirmTicketsService confirmTicketsService;
     private final PublishedTicketTypeRepo publishedTicketTypeRepo;
     private final CreateBookingItemsService createBookingItemsService;
-
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public PlaceBookingService(PublishedEventRepo publishedEventRepo,
                                ConfirmTicketsService confirmTicketsService,
                                PublishedTicketTypeRepo publishedTicketTypeRepo,
                                BookingRepo bookingRepo,
+                               ApplicationEventPublisher applicationEventPublisher,
                                BookingResponseMapper bookingResponseMapper,
                                CreateBookingItemsService createBookingItemsService,
                                HoldTicketsService holdTicketsService, ReferenceGenerator generator ,
@@ -62,6 +64,7 @@ public class PlaceBookingService {
         this.bookingResponseMapper = bookingResponseMapper;
         this.publishedTicketTypeRepo = publishedTicketTypeRepo;
         this.createBookingItemsService = createBookingItemsService;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Transactional
@@ -74,7 +77,11 @@ public class PlaceBookingService {
         UUID attendeeId = UUID.fromString(
                 SecurityContextHolder.getContext().getAuthentication().getName());
 
-        // 1. Validate published event
+        AuthenticatedUser user = (AuthenticatedUser) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+
+        String email = user.email();
+
         PublishedEventEntity event = publishedEventRepo.findById(request.eventId())
                 .orElseThrow(() -> new NoSuchElementException("Event is not published"));
 
@@ -138,6 +145,7 @@ public class PlaceBookingService {
         String reference = generator.execute();
         BookingEntity booking = new BookingEntity(
                 bookingId,
+                email,
                 event.getEventId(),
                 attendeeId,
                 event.getEventTitle(),
@@ -148,6 +156,7 @@ public class PlaceBookingService {
                 now,
                 requestedQuantity
         );
+
         bookingRepo.save(booking);
 
         List<BookingItemEntity> items =
@@ -155,6 +164,12 @@ public class PlaceBookingService {
                         bookingId,
                         request.items()
                 );
+
+        applicationEventPublisher.publishEvent(new BookingSenderDto(
+                booking.getEmail(),
+                booking.getReference(),
+                booking.getStatus(),
+                booking.getEventTitle()));
 
         return bookingResponseMapper.toResponse(booking, items);
     }

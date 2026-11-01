@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/error").permitAll()
                         .requestMatchers("/internal/**").permitAll()
                         .requestMatchers("/api/bookings/**").hasRole("ATTENDEE")
+                        .requestMatchers("/api/organizer/**").hasRole("ORGANIZER")
                 )
 
                 .exceptionHandling(e -> e

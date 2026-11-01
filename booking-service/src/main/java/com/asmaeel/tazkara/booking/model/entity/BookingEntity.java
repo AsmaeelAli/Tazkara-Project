@@ -21,6 +21,9 @@ public class BookingEntity {
     @Id
     private UUID id;
 
+    @Column(name = "attendee_email")
+    private String AttendeeEmail;
+
     @Column(name = "event_id", nullable = false)
     private UUID eventId;
 
@@ -68,10 +71,11 @@ public class BookingEntity {
     protected BookingEntity() {
     }
 
-    public BookingEntity(UUID id, UUID eventId, UUID attendeeId,
+    public BookingEntity(UUID id, String AttendeeEmail, UUID eventId, UUID attendeeId,
                          String eventTitle, String reference, Instant eventStartTime,
                          BigDecimal totalAmount, Instant holdExpiresAt, Instant createdAt ,Integer quantity) {
         this.id = id;
+        this.AttendeeEmail = AttendeeEmail;
         this.eventId = eventId;
         this.attendeeId = attendeeId;
         this.eventTitle = eventTitle;
@@ -170,16 +174,9 @@ public class BookingEntity {
         return totalAmount;
     }
 
-    public BigDecimal getRefundAmount() {
-        return refundAmount;
-    }
 
     public Instant getHoldExpiresAt() {
         return holdExpiresAt;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
     }
 
     public Instant getConfirmedAt() {
@@ -188,5 +185,9 @@ public class BookingEntity {
 
     public Integer getQuantity() {
         return quantity;
+    }
+
+    public String getEmail() {
+        return AttendeeEmail;
     }
 }

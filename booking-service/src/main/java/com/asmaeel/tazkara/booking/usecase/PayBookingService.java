@@ -2,6 +2,7 @@ package com.asmaeel.tazkara.booking.usecase;
 
 import com.asmaeel.tazkara.booking.common.PublishedEventStatus;
 import com.asmaeel.tazkara.booking.model.dto.BookingChangedEventDto;
+import com.asmaeel.tazkara.booking.model.dto.BookingSenderDto;
 import com.asmaeel.tazkara.booking.model.dto.PaymentRequestDto;
 import com.asmaeel.tazkara.booking.model.dto.PaymentResponseDto;
 import com.asmaeel.tazkara.booking.model.entity.BookingEntity;
@@ -65,6 +66,13 @@ public class PayBookingService {
         booking.confirm(now);
 
         confirmTicketsService.execute(booking.getId());
+
+        applicationEventPublisher.publishEvent(new BookingSenderDto(
+                booking.getEmail(),
+                booking.getReference(),
+                booking.getStatus(),
+                booking.getEventTitle()));
+
 
         applicationEventPublisher.publishEvent(new BookingChangedEventDto(booking.getEventId()));
         return new PaymentResponseDto(

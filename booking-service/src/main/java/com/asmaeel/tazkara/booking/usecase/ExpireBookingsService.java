@@ -45,7 +45,6 @@ public class ExpireBookingsService {
 
         for (UUID id : ids) {
             try {
-                // transaction مستقلة لكل حجز
                 tx.executeWithoutResult(status -> expireOne(id, now));
             } catch (ObjectOptimisticLockingFailureException e) {
                 log.info("Booking {} was updated by another process, skipped", id);

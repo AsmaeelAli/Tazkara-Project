@@ -2,6 +2,7 @@ package com.asmaeel.tazkara.booking.repository;
 
 import com.asmaeel.tazkara.booking.common.BookingStatus;
 import com.asmaeel.tazkara.booking.model.entity.BookingEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -16,6 +17,9 @@ import java.util.UUID;
 
 @Repository
 public interface BookingRepo extends JpaRepository<BookingEntity, UUID> , JpaSpecificationExecutor<BookingEntity> {
+
+    Page<BookingEntity> findAllByEventIdAndStatus(UUID eventId, BookingStatus status, Pageable pageable);
+
     @Query("""
         SELECT (
             COALESCE(
