@@ -5,13 +5,15 @@ import com.asmaeel.tazkara.booking.model.dto.BookingRequestDto;
 import com.asmaeel.tazkara.booking.model.dto.BookingResponseDto;
 import com.asmaeel.tazkara.booking.model.dto.ItemRequestDto;
 import com.asmaeel.tazkara.booking.model.entity.BookingEntity;
+import com.asmaeel.tazkara.booking.model.entity.BookingItemEntity;
 import com.asmaeel.tazkara.booking.model.entity.PublishedEventEntity;
-import com.asmaeel.tazkara.booking.model.entity.PublishedTicketTypeEntity;
 import com.asmaeel.tazkara.booking.repository.BookingRepo;
 import com.asmaeel.tazkara.booking.repository.PublishedEventRepo;
 import com.asmaeel.tazkara.booking.repository.PublishedTicketTypeRepo;
 import com.asmaeel.tazkara.booking.repository.TicketRepo;
 import com.asmaeel.tazkara.shared.exception.BusinessRuleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,9 @@ import java.util.UUID;
 
 @Service
 public class PlaceBookingService {
+
+    private static final Logger log = LoggerFactory.getLogger(PlaceBookingService.class);
+
     private final Integer holdDuration;
     private final BookingRepo bookingRepo;
     private final ReferenceGenerator generator;
@@ -34,6 +39,7 @@ public class PlaceBookingService {
     private final BookingResponseMapper bookingResponseMapper;
     private final ConfirmTicketsService confirmTicketsService;
     private final PublishedTicketTypeRepo publishedTicketTypeRepo;
+    private final CreateBookingItemsService createBookingItemsService;
 
 
     public PlaceBookingService(PublishedEventRepo publishedEventRepo,
@@ -41,6 +47,7 @@ public class PlaceBookingService {
                                PublishedTicketTypeRepo publishedTicketTypeRepo,
                                BookingRepo bookingRepo, TicketRepo ticketRepo ,
                                BookingResponseMapper bookingResponseMapper,
+                               CreateBookingItemsService createBookingItemsService,
                                HoldTicketsService holdTicketsService, ReferenceGenerator generator ,
                                @Value("${booking.hold-duration}") Integer holdDuration) {
 
@@ -52,10 +59,13 @@ public class PlaceBookingService {
         this.confirmTicketsService = confirmTicketsService;
         this.bookingResponseMapper = bookingResponseMapper;
         this.publishedTicketTypeRepo = publishedTicketTypeRepo;
+        this.createBookingItemsService = createBookingItemsService;
     }
 
     @Transactional
     public BookingResponseDto execute(BookingRequestDto request) {
+
+        System.out.println("PLACE BOOKING EXECUTED");
 
         Instant now = Instant.now();
         Instant holdExpiresAt = now.plus(Duration.ofMinutes(holdDuration));
@@ -86,24 +96,34 @@ public class PlaceBookingService {
             throw new BusinessRuleException("One or more ticket types do not belong to this event");
         }
 
+
         int requestedQuantity = request.items().stream()
                 .mapToInt(ItemRequestDto::quantity)
                 .sum();
 
+        log.info(
+                "Booking attempt: attendeeId={}, eventId={}, requestedQuantity={}",
+                attendeeId,
+                event.getEventId(),
+                requestedQuantity
+        );
+
         bookingRepo.lockAttendeeEvent(attendeeId,event.getEventId());
+
+        log.info(
+                "Can book result: {}",
+                bookingRepo.canBook(attendeeId, event.getEventId(), requestedQuantity)
+        );
 
         if (!bookingRepo.canBook(attendeeId, request.eventId(), requestedQuantity)) {
             throw new BusinessRuleException("A maximum of 6 tickets is allowed per event per user");
         }
 
 
-
         BigDecimal total = BigDecimal.ZERO;
-
         for(ItemRequestDto item : request.items()){
            total = total.add(publishedTicketTypeRepo.calculateTicket(event.getEventId(),item.ticketTypeId(),item.quantity()));
         }
-
 
         // 3. Check ticket availability
         UUID bookingId = UUID.randomUUID();
@@ -130,11 +150,12 @@ public class PlaceBookingService {
         );
         bookingRepo.save(booking);
 
-        List<PublishedTicketTypeEntity> types =
-                publishedTicketTypeRepo.findAllById(ids);
+        List<BookingItemEntity> items =
+                createBookingItemsService.execute(
+                        bookingId,
+                        request.items()
+                );
 
-        return bookingResponseMapper.toResponse(booking, types, request.items());
+        return bookingResponseMapper.toResponse(booking, items);
     }
 }
-
-
