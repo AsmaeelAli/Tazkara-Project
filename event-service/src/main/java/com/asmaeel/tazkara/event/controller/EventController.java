@@ -11,7 +11,7 @@ import com.asmaeel.tazkara.event.usecase.event.UpdateDraftEventService;
 import com.asmaeel.tazkara.shared.dto.MessageResponse;
 import com.asmaeel.tazkara.shared.dto.PageResponse;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -19,50 +19,50 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
-    private final ListMyEventsService listMyEventsService;
+
     private final CreateEventService createEventService;
-    private final PublishEventService publishEventService;
     private final UpdateDraftEventService updateDraftEventService;
+    private final PublishEventService publishEventService;
+    private final ListMyEventsService listMyEventsService;
 
     public EventController(CreateEventService createEventService,
-                           ListMyEventsService listMyEventsService,
+                           UpdateDraftEventService updateDraftEventService,
                            PublishEventService publishEventService,
-                           UpdateDraftEventService updateDraftEventService) {
+                           ListMyEventsService listMyEventsService) {
 
         this.createEventService = createEventService;
-        this.listMyEventsService = listMyEventsService;
-        this.publishEventService = publishEventService;
         this.updateDraftEventService = updateDraftEventService;
+        this.publishEventService = publishEventService;
+        this.listMyEventsService = listMyEventsService;
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public EventResponseDto newEvent(@RequestBody @Valid CreateEventRequestDto request) {
         return createEventService.execute(request);
     }
 
+    @PutMapping("/{eventId}")
+    public EventResponseDto updateEvent(@PathVariable UUID eventId,
+                                        @RequestBody @Valid UpdateEventRequestDto request) {
+        return updateDraftEventService.execute(eventId, request);
+    }
+
     @PostMapping("/{eventId}/publish")
-    public ResponseEntity<MessageResponse> publishEvent(@PathVariable UUID eventId) {
-        String message = publishEventService.execute(eventId);
-        return ResponseEntity.ok(new MessageResponse(message));
+    public MessageResponse publishEvent(@PathVariable UUID eventId) {
+        return new MessageResponse(publishEventService.execute(eventId));
     }
 
     @PostMapping("/{eventId}/cancel")
-    public ResponseEntity<MessageResponse> cancelEvent(@PathVariable UUID eventId) {
+    public MessageResponse cancelEvent(@PathVariable UUID eventId) {
         return null;
     }
 
-
-    @PutMapping("/{eventId}")
-    public EventResponseDto updateEvent(@PathVariable UUID eventId,@RequestBody UpdateEventRequestDto request) {
-        return updateDraftEventService.execute(eventId,request);
-    }
-
-    @GetMapping()
+    @GetMapping
     public PageResponse<EventResponseDto> myEvents(
             @RequestParam(required = false) EventStatus status,
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "3") Integer size) {
-        return listMyEventsService.execute(status, page, Math.min(size, 50));
-
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return listMyEventsService.execute(status, Math.max(page, 0), Math.max(1, Math.min(size, 50)));
     }
 }
