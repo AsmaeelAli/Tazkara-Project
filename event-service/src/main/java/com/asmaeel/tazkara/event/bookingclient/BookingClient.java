@@ -33,10 +33,10 @@ public class BookingClient {
                 .build();
     }
 
-    public void send(Object message) {
+    public void send(Object message , String url) {
         try {
             restClient.post()
-                    .uri("/internal/tickets")
+                    .uri("/internal/bookins" + url)
                     .body(message)
                     .retrieve()
                     .toBodilessEntity();

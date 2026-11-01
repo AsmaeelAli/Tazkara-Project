@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Entity
 @Table(name = "BOOKINGS",
@@ -16,10 +15,14 @@ import java.util.concurrent.atomic.AtomicInteger;
                 @Index(name = "idx_booking_attendee_event", columnList = "attendee_id,event_id"),
                 @Index(name = "idx_booking_status_hold", columnList = "status,hold_expires_at")
         })
+
 public class BookingEntity {
 
     @Id
     private UUID id;
+
+    @Column(name = "attendee_email")
+    private String AttendeeEmail;
 
     @Column(name = "event_id", nullable = false)
     private UUID eventId;
@@ -32,9 +35,6 @@ public class BookingEntity {
 
     @Column(nullable = false, unique = true, length = 16)
     private String reference;
-
-    @Column(name = "attendee_email", nullable = false)
-    private String attendeeEmail;
 
     @Column(name = "event_start_time", nullable = false)
     private Instant eventStartTime;
@@ -62,29 +62,31 @@ public class BookingEntity {
     @Column(name = "confirmed_at")
     private Instant confirmedAt;
 
-    @Column()
-    private AtomicInteger version;
+    @Column(nullable = false)
+    private Integer quantity;
+
+    @Version
+    private Long version;
 
     protected BookingEntity() {
     }
 
-    public BookingEntity(UUID id, UUID eventId, UUID attendeeId,
-                         String eventTitle, String reference,
-                         String attendeeEmail, Instant eventStartTime,
-                         BigDecimal totalAmount, Instant holdExpiresAt, Instant createdAt) {
+    public BookingEntity(UUID id, String AttendeeEmail, UUID eventId, UUID attendeeId,
+                         String eventTitle, String reference, Instant eventStartTime,
+                         BigDecimal totalAmount, Instant holdExpiresAt, Instant createdAt ,Integer quantity) {
         this.id = id;
+        this.AttendeeEmail = AttendeeEmail;
         this.eventId = eventId;
         this.attendeeId = attendeeId;
         this.eventTitle = eventTitle;
         this.reference = reference;
-        this.attendeeEmail = attendeeEmail;
         this.eventStartTime = eventStartTime;
         this.totalAmount = totalAmount;
         this.holdExpiresAt = holdExpiresAt;
         this.createdAt = createdAt;
+        this.quantity = quantity;
 
-        // Free booking (total is zero) is confirmed immediately
-        if (totalAmount.compareTo(BigDecimal.ZERO) == 0) {
+        if (totalAmount.compareTo(BigDecimal.ZERO) == 0.00) {
             this.status = BookingStatus.CONFIRMED;
             this.confirmedAt = createdAt;
         } else {
@@ -92,12 +94,13 @@ public class BookingEntity {
         }
     }
 
-    // ---------- Domain behaviour ----------
+
 
     public void confirm(Instant now) {
         if (status != BookingStatus.PENDING_PAYMENT) {
-            throw new BusinessRuleException("Only a booking waiting for payment can be paid");
+            throw new BusinessRuleException("This booking has already been paid.");
         }
+
         if (!now.isBefore(holdExpiresAt)) {
             throw new BusinessRuleException("The payment time for this booking has passed");
         }
@@ -105,12 +108,22 @@ public class BookingEntity {
         this.confirmedAt = now;
     }
 
-    public void expire(Instant now) {
+//    public void expire(Instant now) {
+//        if (status != BookingStatus.PENDING_PAYMENT) {
+//            log.warn("Booking {} was skipped during expiration. Current status: {}", id, status);
+//            return;
+//        }
+//        this.status = BookingStatus.EXPIRED;
+//    }
+
+    public boolean expire(Instant now) {
         if (status != BookingStatus.PENDING_PAYMENT) {
-            throw new BusinessRuleException("Only a booking waiting for payment can expire");
+            return false;
         }
 
-        this.status = BookingStatus.EXPIRED;
+        status = BookingStatus.EXPIRED;
+        holdExpiresAt = now;
+        return true;
     }
 
     public void cancel(CancellationReason reason, BigDecimal refund) {
@@ -124,9 +137,6 @@ public class BookingEntity {
         this.status = BookingStatus.CANCELLED;
         this.cancellationReason = reason;
     }
-
-    // ---------- Getters only (no setters on purpose) ----------
-
 
     public UUID getId() {
         return id;
@@ -148,10 +158,6 @@ public class BookingEntity {
         return reference;
     }
 
-    public String getAttendeeEmail() {
-        return attendeeEmail;
-    }
-
     public Instant getEventStartTime() {
         return eventStartTime;
     }
@@ -168,20 +174,20 @@ public class BookingEntity {
         return totalAmount;
     }
 
-    public BigDecimal getRefundAmount() {
-        return refundAmount;
-    }
 
     public Instant getHoldExpiresAt() {
         return holdExpiresAt;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
     }
 
     public Instant getConfirmedAt() {
         return confirmedAt;
     }
 
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public String getEmail() {
+        return AttendeeEmail;
+    }
 }

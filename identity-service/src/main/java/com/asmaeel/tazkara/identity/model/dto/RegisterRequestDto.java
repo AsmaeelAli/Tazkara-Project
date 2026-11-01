@@ -11,13 +11,13 @@ public record RegisterRequestDto(
         @Pattern(regexp = "^\\p{L}[\\p{L} '\\-]*\\p{L}{1,18}\\p{L}$", message = "name must contain only letters, spaces, hyphens or apostrophes")
         String name,
 
-        @Schema(example = "asmaeel@gmail.com")
+        @Schema(example = "asmaeel@tazkara.com")
         @NotBlank(message = "email is required")
         @Email
         @Size(max = 50)
         String email,
 
-        @Schema(example = "Password2001")
+        @Schema(example = "Pass123123")
         @Size(min = 8, max = 72, message = "password must contain at least 8 characters")
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$", message = "password must contain at least one letter and one digit")
         String password,

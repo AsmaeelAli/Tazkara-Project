@@ -3,13 +3,9 @@ package com.asmaeel.tazkara.identity.model.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.UUID;
 
-@Getter
-@Setter
 @Table
 @Entity
 public class OrganizationMapEntity {
@@ -36,6 +32,23 @@ public class OrganizationMapEntity {
     public OrganizationMapEntity(UUID userId, String originalName, String normalizedName) {
         this.userId = userId;
         this.originalName = originalName;
+        this.normalizedName = normalizedName;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getOriginalName() {
+        return originalName;
+    }
+
+
+    public void setOriginalName(String originalName) {
+        this.originalName = originalName;
+    }
+
+    public void setNormalizedName(String normalizedName) {
         this.normalizedName = normalizedName;
     }
 }

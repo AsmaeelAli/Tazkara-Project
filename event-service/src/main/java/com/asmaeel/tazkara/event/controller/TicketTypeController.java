@@ -1,8 +1,8 @@
 package com.asmaeel.tazkara.event.controller;
 
-import com.asmaeel.tazkara.event.model.dto.TicketResponseDto;
-import com.asmaeel.tazkara.event.model.dto.TicketRequestDto;
-import com.asmaeel.tazkara.event.usecase.ticket.CreateTicketType;
+import com.asmaeel.tazkara.event.model.dto.TicketTypeResponseDto;
+import com.asmaeel.tazkara.event.model.dto.TicketTypeRequestDto;
+import com.asmaeel.tazkara.event.usecase.ticket.CreateTicketTypeService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,14 +12,14 @@ import java.util.UUID;
 @RequestMapping("/api/tickets")
 public class TicketTypeController {
 
-    private final CreateTicketType createTicketType;
+    private final CreateTicketTypeService createTicketTypeService;
 
-    public TicketTypeController(CreateTicketType createTicketType) {
-        this.createTicketType = createTicketType;
+    public TicketTypeController(CreateTicketTypeService createTicketTypeService) {
+        this.createTicketTypeService = createTicketTypeService;
     }
 
     @PostMapping("/{eventId}")
-    public TicketResponseDto newTicketType(@PathVariable UUID eventId, @RequestBody @Valid TicketRequestDto request) {
-        return createTicketType.execute(eventId, request);
+    public TicketTypeResponseDto newTicketType(@PathVariable UUID eventId, @RequestBody @Valid TicketTypeRequestDto request) {
+        return createTicketTypeService.execute(eventId, request);
     }
 }

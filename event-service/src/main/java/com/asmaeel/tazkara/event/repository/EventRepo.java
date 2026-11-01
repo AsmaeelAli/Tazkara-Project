@@ -27,4 +27,6 @@ public interface EventRepo extends JpaRepository<EventEntity, UUID> , JpaSpecifi
     WHERE e.ownerId = :ownerId
 """)
     boolean hasAvailableEventSlots(@Param("ownerId") UUID organizerId);
+
+    boolean existsByTitleAndOwnerIdAndIdNot(String title, UUID ownerId, UUID eventId);
 }

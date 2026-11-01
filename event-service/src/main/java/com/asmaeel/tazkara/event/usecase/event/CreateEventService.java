@@ -1,9 +1,9 @@
 package com.asmaeel.tazkara.event.usecase.event;
 
-import com.asmaeel.tazkara.event.model.dto.EventRequestDto;
+import com.asmaeel.tazkara.event.model.dto.CreateEventRequestDto;
 import com.asmaeel.tazkara.event.model.dto.EventResponseDto;
-import com.asmaeel.tazkara.event.model.dto.TicketRequestDto;
-import com.asmaeel.tazkara.event.model.dto.TicketResponseDto;
+import com.asmaeel.tazkara.event.model.dto.TicketTypeRequestDto;
+import com.asmaeel.tazkara.event.model.dto.TicketTypeResponseDto;
 import com.asmaeel.tazkara.event.model.entity.EventEntity;
 import com.asmaeel.tazkara.event.model.entity.TicketTypeEntity;
 import com.asmaeel.tazkara.event.repository.EventRepo;
@@ -22,18 +22,18 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class CreateEvent {
+public class CreateEventService {
     private final EventRepo eventRepo;
     private final TicketTypeRepo ticketTypeRepo;
 
 
-    public CreateEvent(TicketTypeRepo ticketTypeRepo, EventRepo eventRepo) {
+    public CreateEventService(TicketTypeRepo ticketTypeRepo, EventRepo eventRepo) {
         this.eventRepo = eventRepo;
         this.ticketTypeRepo = ticketTypeRepo;
     }
 
     @Transactional
-    public EventResponseDto execute(EventRequestDto request) {
+    public EventResponseDto execute(CreateEventRequestDto request) {
 
         if (request.startDateTime().isBefore(Instant.now().plus(Duration.ofHours(72)))) {
             throw new BusinessRuleException("Event must start at least 3 days in the future");
@@ -59,7 +59,7 @@ public class CreateEvent {
         );
         eventRepo.save(event);
 
-        List<TicketResponseDto> list = listTickets(event.getId(), request.tickets());
+        List<TicketTypeResponseDto> list = listTickets(event.getId(), request.tickets());
 
 
         return new EventResponseDto(
@@ -74,12 +74,12 @@ public class CreateEvent {
         );
     }
 
-    private List<TicketResponseDto> listTickets(UUID id, List<TicketRequestDto> list) {
+    private List<TicketTypeResponseDto> listTickets(UUID id, List<TicketTypeRequestDto> list) {
 
         Set<String> names = new HashSet<>();
 
         boolean hasDuplicates = list.stream()
-                .map(TicketRequestDto::name)
+                .map(TicketTypeRequestDto::name)
                 .anyMatch(name -> !names.add(name));
 
         if (hasDuplicates) {
@@ -98,7 +98,8 @@ public class CreateEvent {
         ticketTypeRepo.saveAll(ticketTypeList);
 
         return ticketTypeList.stream()
-                .map(ticket -> new TicketResponseDto(
+                .map(ticket -> new TicketTypeResponseDto(
+                        ticket.getId(),
                         ticket.getName(),
                         ticket.getPrice(),
                         ticket.getQuantity()

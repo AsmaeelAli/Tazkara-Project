@@ -33,20 +33,19 @@ public class SecurityConfig {
 
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .addFilterBefore(serviceKeyFilter, AuthorizationFilter.class)
-
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/error").permitAll()
                         .requestMatchers("/internal/**").permitAll()
                         .requestMatchers("/api/bookings/**").hasRole("ATTENDEE")
+                        .requestMatchers("/api/organizer/**").hasRole("ORGANIZER")
                 )
 
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint(errorWriter))
                         .accessDeniedHandler(new JwtAccessDenied(errorWriter)))
 
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(serviceKeyFilter, AuthorizationFilter.class);
 
         return http.build();
     }

@@ -95,6 +95,26 @@ public class EventEntity {
         return status;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setVenue(String venue) {
+        this.venue = venue;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setStartDateTime(Instant startDateTime) {
+        this.startDateTime = startDateTime;
+    }
+
     public void assertCanBePublished(Instant now) {
         if (status != EventStatus.DRAFT) {
             throw new BusinessRuleException("Only draft events can be published");

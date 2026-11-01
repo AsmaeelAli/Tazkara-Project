@@ -2,14 +2,10 @@ package com.asmaeel.tazkara.event.model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "TICKET_TYPE",uniqueConstraints = {
         @UniqueConstraint(
@@ -47,6 +43,42 @@ public class TicketTypeEntity {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
+        this.eventId = eventId;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public UUID getEventId() {
+        return eventId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setEventId(UUID eventId) {
         this.eventId = eventId;
     }
 }

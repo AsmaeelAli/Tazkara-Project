@@ -10,4 +10,6 @@ import java.util.UUID;
 @Repository
 public interface OrganizationMapRepo extends JpaRepository<OrganizationMapEntity, UUID>, JpaSpecificationExecutor<OrganizationMapEntity> {
     boolean existsByNormalizedName(String normalizedName);
+    boolean existsByNormalizedNameAndUserIdNot(String normalizedName, UUID userId);
+    OrganizationMapEntity findByUserId(UUID userId);
 }

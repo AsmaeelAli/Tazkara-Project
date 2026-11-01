@@ -2,7 +2,7 @@ package com.asmaeel.tazkara.event.usecase.event;
 
 import com.asmaeel.tazkara.event.common.EventStatus;
 import com.asmaeel.tazkara.event.model.dto.EventResponseDto;
-import com.asmaeel.tazkara.event.model.dto.TicketResponseDto;
+import com.asmaeel.tazkara.event.model.dto.TicketTypeResponseDto;
 import com.asmaeel.tazkara.event.model.entity.EventEntity;
 import com.asmaeel.tazkara.event.model.entity.TicketTypeEntity;
 import com.asmaeel.tazkara.event.repository.EventRepo;
@@ -22,18 +22,18 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class GetMyEvents {
+public class ListMyEventsService {
     private static final int MAX_SIZE = 50;
     private final EventRepo eventRepo;
     private final TicketTypeRepo ticketTypeRepo;
 
-    public GetMyEvents(EventRepo eventRepo , TicketTypeRepo ticketTypeRepo) {
+    public ListMyEventsService(EventRepo eventRepo , TicketTypeRepo ticketTypeRepo) {
         this.eventRepo = eventRepo;
         this.ticketTypeRepo = ticketTypeRepo;
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<EventResponseDto> execute(EventStatus status, int page, int size) {
+    public PageResponse<EventResponseDto> execute(EventStatus status, Integer page, Integer size) {
         UUID ownerId = UUID.fromString(
                 SecurityContextHolder.getContext().getAuthentication().getName());
 
@@ -48,12 +48,13 @@ public class GetMyEvents {
         List<UUID> ids = result.getContent().stream().map(EventEntity::getId).toList();
 
 
-        Map<UUID, List<TicketResponseDto>> ticketsByEvent = ids.isEmpty()
+        Map<UUID, List<TicketTypeResponseDto>> ticketsByEvent = ids.isEmpty()
                 ? Map.of()
                 : ticketTypeRepo.findByEventIdIn(ids).stream()
                 .collect(Collectors.groupingBy(
                         TicketTypeEntity::getEventId,
-                        Collectors.mapping(t -> new TicketResponseDto(
+                        Collectors.mapping(t -> new TicketTypeResponseDto(
+                                        t.getId(),
                                         t.getName(),
                                         t.getPrice(),
                                         t.getQuantity()),

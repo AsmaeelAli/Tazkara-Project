@@ -4,13 +4,9 @@ import com.asmaeel.tazkara.identity.common.Roles;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.UUID;
 
-@Setter
-@Getter
 @Entity
 @Table(name = "USERS")
 public class UserEntity {
@@ -49,4 +45,29 @@ public class UserEntity {
         this.role = role;
         this.enabled = true;
     }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public Roles getRole() {
+        return role;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
 }

@@ -4,6 +4,7 @@ import com.asmaeel.tazkara.booking.common.TicketStatus;
 import com.asmaeel.tazkara.shared.exception.InternalSystemException;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -46,12 +47,12 @@ public class TicketEntity {
         return status;
     }
 
-    public UUID getBookingId() {
-        return bookingId;
-    }
-
     public void setBookingId(UUID bookingId) {
         this.bookingId = bookingId;
+    }
+
+    public UUID getBookingId() {
+        return bookingId;
     }
 
     public void hold(UUID bookingId) {
@@ -69,9 +70,6 @@ public class TicketEntity {
     }
 
     private void changeStatus(TicketStatus target) {
-        if (!status.canTransitionTo(target)) {
-            throw new InternalSystemException("Ticket cannot move from " + status + " to " + target);
-        }
         this.status = target;
     }
 }

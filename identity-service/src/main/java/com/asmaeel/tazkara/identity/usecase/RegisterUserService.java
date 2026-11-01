@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CreateUser {
+public class RegisterUserService {
     private final UserRepo userRepo;
     private final OrganizationMapRepo organizationMapRepo;
     private final PasswordEncoder passwordEncoder;
     private final Normalizer normalizer;
 
-    public CreateUser(UserRepo userRepo, PasswordEncoder passwordEncoder, Normalizer normalizer, OrganizationMapRepo organizationMapRepo) {
+    public RegisterUserService(UserRepo userRepo, PasswordEncoder passwordEncoder, Normalizer normalizer, OrganizationMapRepo organizationMapRepo) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.normalizer = normalizer;

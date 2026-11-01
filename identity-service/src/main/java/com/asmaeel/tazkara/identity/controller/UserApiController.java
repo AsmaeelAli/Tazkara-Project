@@ -1,23 +1,35 @@
 package com.asmaeel.tazkara.identity.controller;
 
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.asmaeel.tazkara.identity.model.dto.UpdateProfileRequestDto;
+import com.asmaeel.tazkara.identity.model.dto.UserProfileResponseDto;
+import com.asmaeel.tazkara.identity.usecase.GetProfileService;
+import com.asmaeel.tazkara.identity.usecase.UpdateProfileService;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users/me")
 public class UserApiController {
 
-    /**
-     * for test
-     *
-     */
+    private final GetProfileService getProfileService;
+    private final UpdateProfileService updateProfileService;
 
-    @GetMapping
-    @PreAuthorize("hasRole('ORGANIZER')")
-    public String user() {
-        return "Hello World !";
+    public UserApiController(UpdateProfileService updateProfileService, GetProfileService getProfileService) {
+        this.getProfileService = getProfileService;
+        this.updateProfileService = updateProfileService;
     }
+
+    @GetMapping()
+    public UserProfileResponseDto me(){
+        return getProfileService.execute();
+    }
+
+
+    @PutMapping()
+    public UserProfileResponseDto update(@RequestBody @Valid UpdateProfileRequestDto request){
+        return updateProfileService.execute(request);
+    }
+
+
 
 }
