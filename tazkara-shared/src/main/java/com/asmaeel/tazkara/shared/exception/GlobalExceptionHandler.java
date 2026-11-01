@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessRuleException.class)
     public ResponseEntity<ErrorResponse> businessRule(BusinessRuleException e, HttpServletRequest req) {
-        return build(HttpStatus.BAD_REQUEST, "BUSINESS_RULE_VIOLATION", e.getMessage(), req, null);
+        return build(HttpStatus.UNPROCESSABLE_ENTITY, "BUSINESS_RULE_VIOLATION", e.getMessage(), req, null);
     }
 
     @ExceptionHandler(ServiceUnavailableException.class)
