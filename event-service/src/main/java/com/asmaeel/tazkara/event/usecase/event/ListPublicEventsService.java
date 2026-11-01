@@ -1,7 +1,11 @@
 package com.asmaeel.tazkara.event.usecase.event;
 
 import com.asmaeel.tazkara.event.model.dto.PublicEventSummaryResponseDto;
+import com.asmaeel.tazkara.event.model.dto.PublicTicketTypeResponseDto;
+import com.asmaeel.tazkara.event.model.entity.EventBookingSummaryEntity;
 import com.asmaeel.tazkara.event.model.entity.EventEntity;
+import com.asmaeel.tazkara.event.model.entity.TicketTypeEntity;
+import com.asmaeel.tazkara.event.repository.EventBookingSummaryRepo;
 import com.asmaeel.tazkara.event.repository.EventRepo;
 import com.asmaeel.tazkara.event.repository.EventSpecifications;
 import com.asmaeel.tazkara.event.repository.TicketTypeRepo;
@@ -20,14 +24,20 @@ import java.util.List;
 public class ListPublicEventsService {
 
     private final EventRepo eventRepo;
-    private final TicketTypeRepo ticketRepo;
+    private final PublicEventMapper publicEventMapper;
+    private final EventBookingSummaryRepo bookingSummaryRepo;
+    private final TicketTypeRepo ticketTypeRepo;
 
     public ListPublicEventsService(
             EventRepo eventRepo,
-            TicketTypeRepo ticketRepo
+            PublicEventMapper publicEventMapper,
+            EventBookingSummaryRepo bookingSummaryRepo,
+            TicketTypeRepo ticketTypeRepo
     ) {
         this.eventRepo = eventRepo;
-        this.ticketRepo = ticketRepo;
+        this.publicEventMapper = publicEventMapper;
+        this.bookingSummaryRepo = bookingSummaryRepo;
+        this.ticketTypeRepo = ticketTypeRepo;
     }
 
     public PageResponse<PublicEventSummaryResponseDto> execute(int page, int size, String city, Instant from, Instant to, String keyword) {
@@ -42,15 +52,15 @@ public class ListPublicEventsService {
 
         Page<EventEntity> events = eventRepo.findAll(specification, pageable);
 
-        Page<PublicEventSummaryResponseDto> mappedEvents =
-                events.map(event -> new PublicEventSummaryResponseDto(
-                        event.getId(),
-                        event.getTitle(),
-                        event.getCity(),
-                        event.getVenue(),
-                        event.getStartDateTime(),
-                        List.of()
-                ));
+        Page<PublicEventSummaryResponseDto> mappedEvents = events.map(event -> {
+            List<TicketTypeEntity> ticketTypes =
+                    ticketTypeRepo.findAllByEventId(event.getId());
+
+            List<EventBookingSummaryEntity> summaries =
+                    bookingSummaryRepo.findAllByEventId(event.getId());
+
+            return publicEventMapper.toDto(event, ticketTypes, summaries);
+        });
 
         return PageResponse.from(mappedEvents);
     }
