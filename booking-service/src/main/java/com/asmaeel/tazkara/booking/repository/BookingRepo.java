@@ -17,9 +17,15 @@ import java.util.UUID;
 @Repository
 public interface BookingRepo extends JpaRepository<BookingEntity, UUID> , JpaSpecificationExecutor<BookingEntity> {
     @Query("""
-    SELECT (COALESCE((SELECT SUM(b.quantity)FROM BookingEntity b WHERE b.attendeeId = :attendeeId AND b.eventId = :eventId), 0) + :requestedQuantity) <= 6
-""")
+            SELECT (
+                COALESCE(
+                    (SELECT SUM(b.quantity)
+                     FROM BookingEntity b
+                     WHERE b.attendeeId = :attendeeId
+                       AND b.eventId = :eventId),0) + :requestedQuantity) <= 6
+            """)
     boolean canBook(UUID attendeeId, UUID eventId, int requestedQuantity);
+
 
     Optional<BookingEntity> findByReferenceAndAttendeeId(String reference, UUID attendeeId);
 
