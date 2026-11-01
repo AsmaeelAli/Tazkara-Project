@@ -1,4 +1,3 @@
-
 spring:
   application:
     name: api-gateway-service
@@ -17,7 +16,7 @@ spring:
             - id: identity-api
               uri: http://identity-service:8081
               predicates:
-                - Path=/api,/api/**
+                - Path=/api/users/**
 
             # Event Service
             - id: event-management
@@ -34,6 +33,17 @@ spring:
               uri: http://event-service:8082
               predicates:
                 - Path=/api/tickets,/api/tickets/**
+
+            # Booking Service
+            - id: bookings
+              uri: http://booking-service:8083
+              predicates:
+                - Path=/api/bookings,/api/bookings/**
+
+            - id: organizer-bookings
+              uri: http://booking-service:8083
+              predicates:
+                - Path=/api/organizer/**
 
             # Swagger Documentation
             - id: identity-swagger
