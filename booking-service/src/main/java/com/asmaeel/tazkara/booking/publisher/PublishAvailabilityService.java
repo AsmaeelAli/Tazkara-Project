@@ -7,9 +7,9 @@ import com.asmaeel.tazkara.booking.repository.PublishedEventRepo;
 import com.asmaeel.tazkara.booking.repository.TicketRepo;
 import com.asmaeel.tazkara.shared.dto.AvailabilityChangedMessageDto;
 import com.asmaeel.tazkara.shared.dto.TicketTypeCountsDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class PublishAvailabilityService {
+
+    private static final Logger log = LoggerFactory.getLogger(PublishAvailabilityService.class);
 
     private final TicketRepo ticketRepo;
     private final RabbitMqProducer rabbitMqProducer;
@@ -30,14 +32,18 @@ public class PublishAvailabilityService {
         this.publishedEventRepo = publishedEventRepo;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
     public void execute(BookingChangedEventDto update) {
 
         UUID eventId = update.eventId();
 
+        log.info("Checking published event: {}", eventId);
+
         if (!publishedEventRepo.existsById(eventId)) {
+            log.warn("Event {} is not published. Skipping message.", eventId);
             return;
         }
+
+        log.info("Event {} is published. Preparing availability message.", eventId);
 
         List<TicketStatusCount> rows = ticketRepo.countByTypeAndStatus(eventId);
 
@@ -53,6 +59,8 @@ public class PublishAvailabilityService {
 
         rabbitMqProducer.publishAvailabilityChanged(
                 new AvailabilityChangedMessageDto(eventId, Instant.now(), ticketTypes));
+
+        log.info("Availability message sent : {}", eventId);
     }
 
     private int countOf(List<TicketStatusCount> rows, TicketStatus status) {

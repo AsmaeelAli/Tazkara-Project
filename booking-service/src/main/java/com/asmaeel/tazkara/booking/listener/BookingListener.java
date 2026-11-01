@@ -23,6 +23,7 @@ public class BookingListener {
     public void onBookingChanged(BookingChangedEventDto event) {
         try {
             publishAvailabilityService.execute(event);
+            log.info("BookingChangedEvent received: {}", event.eventId());
         } catch (Exception ex) {
             log.warn("Could not publish availability for event {}", event.eventId(), ex);
         }
