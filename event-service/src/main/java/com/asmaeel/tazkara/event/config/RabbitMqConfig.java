@@ -1,6 +1,5 @@
 package com.asmaeel.tazkara.event.config;
 
-import com.asmaeel.tazkara.shared.messaging.MessagingConstants;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -17,6 +16,12 @@ public class RabbitMqConfig {
     @Value("${rabbitmq.queue.availability-changed}")
     private String availabilityQueueName;
 
+    @Value("${rabbitmq.exchange}")
+    private String tazkaraExchangeName;
+
+    @Value("${rabbitmq.routing-key.availability-changed}")
+    private String availabilityChangedRoutingKey;
+
 
     @Bean
     public Queue availabilityChangedQueue() {
@@ -25,14 +30,14 @@ public class RabbitMqConfig {
 
     @Bean
     public TopicExchange tazkaraExchange() {
-        return new TopicExchange(MessagingConstants.EXCHANGE);
+        return new TopicExchange(tazkaraExchangeName);
     }
 
     @Bean
-    public Binding availabilityChangedBinding(Queue availabilityChangedQueue, TopicExchange tazkaraExchange) {
-        return BindingBuilder.bind(availabilityChangedQueue)
-                .to(tazkaraExchange)
-                .with(MessagingConstants.AVAILABILITY_CHANGED_KEY);
+    public Binding availabilityChangedBinding() {
+        return BindingBuilder.bind(availabilityChangedQueue())
+                .to(tazkaraExchange())
+                .with(availabilityChangedRoutingKey);
     }
 
     @Bean

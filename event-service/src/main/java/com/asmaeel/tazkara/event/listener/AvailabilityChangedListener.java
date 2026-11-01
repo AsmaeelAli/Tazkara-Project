@@ -21,6 +21,7 @@ public class AvailabilityChangedListener {
     @RabbitListener(queues = "${rabbitmq.queue.availability-changed}")
     public void onAvailabilityChanged(AvailabilityChangedMessageDto message) {
         log.info("Received availability change for event {}", message.eventId());
+        System.out.println("🔥 MESSAGE RECEIVED: " + message);
         updateTicketAvailabilityService.execute(message);
     }
 }

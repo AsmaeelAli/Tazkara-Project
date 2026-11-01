@@ -62,6 +62,7 @@ public class EventController {
             @RequestParam(required = false) EventStatus status,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "3") Integer size) {
-        return listMyEventsService.execute(status, page, size);
+        return listMyEventsService.execute(status, page, Math.min(size, 50));
+
     }
 }
