@@ -1,6 +1,7 @@
 package com.asmaeel.tazkara.booking.usecase;
 
 import com.asmaeel.tazkara.booking.common.PublishedEventStatus;
+import com.asmaeel.tazkara.booking.model.dto.BookingChangedEventDto;
 import com.asmaeel.tazkara.booking.model.dto.BookingRequestDto;
 import com.asmaeel.tazkara.booking.model.dto.BookingResponseDto;
 import com.asmaeel.tazkara.booking.model.dto.ItemRequestDto;
@@ -10,11 +11,11 @@ import com.asmaeel.tazkara.booking.model.entity.PublishedEventEntity;
 import com.asmaeel.tazkara.booking.repository.BookingRepo;
 import com.asmaeel.tazkara.booking.repository.PublishedEventRepo;
 import com.asmaeel.tazkara.booking.repository.PublishedTicketTypeRepo;
-import com.asmaeel.tazkara.booking.repository.TicketRepo;
 import com.asmaeel.tazkara.shared.exception.BusinessRuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,33 +40,35 @@ public class PlaceBookingService {
     private final BookingResponseMapper bookingResponseMapper;
     private final ConfirmTicketsService confirmTicketsService;
     private final PublishedTicketTypeRepo publishedTicketTypeRepo;
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final CreateBookingItemsService createBookingItemsService;
 
 
     public PlaceBookingService(PublishedEventRepo publishedEventRepo,
+                               ApplicationEventPublisher applicationEventPublisher,
                                ConfirmTicketsService confirmTicketsService,
                                PublishedTicketTypeRepo publishedTicketTypeRepo,
-                               BookingRepo bookingRepo, TicketRepo ticketRepo ,
+                               BookingRepo bookingRepo,
                                BookingResponseMapper bookingResponseMapper,
                                CreateBookingItemsService createBookingItemsService,
                                HoldTicketsService holdTicketsService, ReferenceGenerator generator ,
                                @Value("${booking.hold-duration}") Integer holdDuration) {
 
+
         this.generator = generator;
         this.bookingRepo = bookingRepo;
         this.holdDuration = holdDuration;
-        this.publishedEventRepo = publishedEventRepo;
         this.holdTicketsService = holdTicketsService;
+        this.publishedEventRepo = publishedEventRepo;
         this.confirmTicketsService = confirmTicketsService;
         this.bookingResponseMapper = bookingResponseMapper;
         this.publishedTicketTypeRepo = publishedTicketTypeRepo;
         this.createBookingItemsService = createBookingItemsService;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Transactional
     public BookingResponseDto execute(BookingRequestDto request) {
-
-        System.out.println("PLACE BOOKING EXECUTED");
 
         Instant now = Instant.now();
         Instant holdExpiresAt = now.plus(Duration.ofMinutes(holdDuration));
@@ -156,6 +159,7 @@ public class PlaceBookingService {
                         request.items()
                 );
 
+        applicationEventPublisher.publishEvent(new BookingChangedEventDto(bookingId));
         return bookingResponseMapper.toResponse(booking, items);
     }
 }
