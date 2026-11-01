@@ -1,16 +1,20 @@
 package com.asmaeel.tazkara.booking.eventclient;
 
+import com.asmaeel.tazkara.shared.dto.OwnerResponse;
 import com.asmaeel.tazkara.shared.exception.ServiceUnavailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 
 import java.time.Duration;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Component
 public class EventClient {
@@ -33,19 +37,20 @@ public class EventClient {
                 .build();
     }
 
-    public void send(Object message , String url) {
+    public UUID getOwnerId(UUID eventId) {
         try {
-            restClient.post()
-                    .uri("/internal/events" + url)
-                    .body(message)
+            return restClient.get()
+                    .uri("/internal/events/{id}/owner", eventId)
                     .retrieve()
-                    .toBodilessEntity();
+                    .body(OwnerResponse.class)
+                    .ownerId();
+        } catch (HttpClientErrorException.NotFound e) {
+            throw new NoSuchElementException("Event not found");
         } catch (ResourceAccessException e) {
             log.error("Could not connect to event-service");
             throw new ServiceUnavailableException();
         } catch (RestClientResponseException e) {
-            log.warn("event-service returned HTTP {}: {}",
-                    e.getStatusCode(), e.getResponseBodyAsString());
+            log.warn("event-service returned HTTP {}", e.getStatusCode());
             throw new ServiceUnavailableException();
         }
     }
