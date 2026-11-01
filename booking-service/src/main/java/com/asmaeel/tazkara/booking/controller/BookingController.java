@@ -35,7 +35,6 @@ public class BookingController {
 
     @PostMapping
     public BookingResponseDto PlaceBooking(@RequestBody @Valid BookingRequestDto request) {
-        System.out.println("BOOKING CONTROLLER REACHED");
         return placeBookingService.execute(request);
     }
 
@@ -51,7 +50,7 @@ public class BookingController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {
 
-        return listMyBookingsService.execute(status, page, size);
+        return listMyBookingsService.execute(status, page, Math.min(size, 50));
     }
 
     @GetMapping("/{reference}")

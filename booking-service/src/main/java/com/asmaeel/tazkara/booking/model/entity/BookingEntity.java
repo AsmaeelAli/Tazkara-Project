@@ -15,6 +15,7 @@ import java.util.UUID;
                 @Index(name = "idx_booking_attendee_event", columnList = "attendee_id,event_id"),
                 @Index(name = "idx_booking_status_hold", columnList = "status,hold_expires_at")
         })
+
 public class BookingEntity {
 
     @Id
@@ -89,9 +90,11 @@ public class BookingEntity {
         }
     }
 
+
+
     public void confirm(Instant now) {
         if (status != BookingStatus.PENDING_PAYMENT) {
-            throw new BusinessRuleException("Only a booking waiting for payment can be paid");
+            throw new BusinessRuleException("This booking has already been paid.");
         }
 
         if (!now.isBefore(holdExpiresAt)) {
@@ -101,12 +104,22 @@ public class BookingEntity {
         this.confirmedAt = now;
     }
 
-    public void expire(Instant now) {
+//    public void expire(Instant now) {
+//        if (status != BookingStatus.PENDING_PAYMENT) {
+//            log.warn("Booking {} was skipped during expiration. Current status: {}", id, status);
+//            return;
+//        }
+//        this.status = BookingStatus.EXPIRED;
+//    }
+
+    public boolean expire(Instant now) {
         if (status != BookingStatus.PENDING_PAYMENT) {
-            throw new BusinessRuleException("Only a booking waiting for payment can expire");
+            return false;
         }
 
-        this.status = BookingStatus.EXPIRED;
+        status = BookingStatus.EXPIRED;
+        holdExpiresAt = now;
+        return true;
     }
 
     public void cancel(CancellationReason reason, BigDecimal refund) {

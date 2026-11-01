@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -68,7 +67,12 @@ public class ExpireBookingsService {
             return;
         }
 
-        booking.expire(now);
+        if (!booking.expire(now)) {
+            log.warn("Skipping expiration for booking {}. Current status: {}",
+                    booking.getId(), booking.getStatus());
+            return;
+        }
+
         ticketRepo.findAllByBookingId(id).forEach(TicketEntity::release);
     }
 }

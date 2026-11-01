@@ -40,12 +40,10 @@ public class PlaceBookingService {
     private final BookingResponseMapper bookingResponseMapper;
     private final ConfirmTicketsService confirmTicketsService;
     private final PublishedTicketTypeRepo publishedTicketTypeRepo;
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final CreateBookingItemsService createBookingItemsService;
 
 
     public PlaceBookingService(PublishedEventRepo publishedEventRepo,
-                               ApplicationEventPublisher applicationEventPublisher,
                                ConfirmTicketsService confirmTicketsService,
                                PublishedTicketTypeRepo publishedTicketTypeRepo,
                                BookingRepo bookingRepo,
@@ -64,7 +62,6 @@ public class PlaceBookingService {
         this.bookingResponseMapper = bookingResponseMapper;
         this.publishedTicketTypeRepo = publishedTicketTypeRepo;
         this.createBookingItemsService = createBookingItemsService;
-        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Transactional
@@ -159,7 +156,6 @@ public class PlaceBookingService {
                         request.items()
                 );
 
-        applicationEventPublisher.publishEvent(new BookingChangedEventDto(bookingId));
         return bookingResponseMapper.toResponse(booking, items);
     }
 }

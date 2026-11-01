@@ -1,6 +1,7 @@
 package com.asmaeel.tazkara.booking.usecase;
 
 import com.asmaeel.tazkara.booking.common.PublishedEventStatus;
+import com.asmaeel.tazkara.booking.model.dto.BookingChangedEventDto;
 import com.asmaeel.tazkara.booking.model.dto.PaymentRequestDto;
 import com.asmaeel.tazkara.booking.model.dto.PaymentResponseDto;
 import com.asmaeel.tazkara.booking.model.entity.BookingEntity;
@@ -8,6 +9,7 @@ import com.asmaeel.tazkara.booking.model.entity.PublishedEventEntity;
 import com.asmaeel.tazkara.booking.repository.BookingRepo;
 import com.asmaeel.tazkara.booking.repository.PublishedEventRepo;
 import com.asmaeel.tazkara.shared.exception.BusinessRuleException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,14 +23,19 @@ public class PayBookingService {
 
     private final BookingRepo bookingRepo;
     private final PublishedEventRepo publishedEventRepo;
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final ConfirmTicketsService confirmTicketsService;
 
     public PayBookingService(BookingRepo bookingRepo,
                              PublishedEventRepo publishedEventRepo,
-                             ConfirmTicketsService confirmTicketsService) {
+                             ConfirmTicketsService confirmTicketsService,
+                             ApplicationEventPublisher applicationEventPublisher) {
+
+
         this.bookingRepo = bookingRepo;
         this.publishedEventRepo = publishedEventRepo;
         this.confirmTicketsService = confirmTicketsService;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Transactional
@@ -59,6 +66,7 @@ public class PayBookingService {
 
         confirmTicketsService.execute(booking.getId());
 
+        applicationEventPublisher.publishEvent(new BookingChangedEventDto(booking.getEventId()));
         return new PaymentResponseDto(
                 booking.getReference(),
                 booking.getStatus(),
