@@ -1,5 +1,39 @@
 name: tazkara
 
+x-booking-base: &booking-base
+  build:
+    context: .
+    dockerfile: Dockerfile
+    args:
+      SERVICE_MODULE: booking-service
+  restart: unless-stopped
+  environment:
+    DB_URL: jdbc:postgresql://postgres:5432/booking_db
+    DB_USER: ${DB_USER:?DB_USER is required}
+    DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+    JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+    API_SERVICE_KEY: ${API_SERVICE_KEY:?API_SERVICE_KEY is required}
+    EVENT_BASE_URL: http://event-service:8082
+    BATCH_SIZE: ${BATCH_SIZE:?BATCH_SIZE is required}
+    REFERENCE_RANDOM_SIZE: ${REFERENCE_RANDOM_SIZE:?REFERENCE_RANDOM_SIZE is required}
+    BOOKING_HOLD_DURATION: ${BOOKING_HOLD_DURATION:?BOOKING_HOLD_DURATION is required}
+    BOOKING_EXPIRY_INTERVAL: ${BOOKING_EXPIRY_INTERVAL:?BOOKING_EXPIRY_INTERVAL is required}
+    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_PORT: "5672"
+    RABBITMQ_USER: ${RABBITMQ_USER:?RABBITMQ_USER is required}
+    RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD is required}
+    RABBITMQ_EXCHANGE: ${RABBITMQ_EXCHANGE:?Required}
+    RABBITMQ_EVENT_PUBLISHED_QUEUE: ${RABBITMQ_EVENT_PUBLISHED_QUEUE:?Required}
+    RABBITMQ_EVENT_CANCELLED_QUEUE: ${RABBITMQ_EVENT_CANCELLED_QUEUE:?Required}
+    RABBITMQ_EVENT_PUBLISHED_KEY: ${RABBITMQ_EVENT_PUBLISHED_KEY:?Required}
+    RABBITMQ_EVENT_CANCELLED_KEY: ${RABBITMQ_EVENT_CANCELLED_KEY:?Required}
+    RABBITMQ_AVAILABILITY_CHANGED_KEY: ${RABBITMQ_AVAILABILITY_CHANGED_KEY:?Required}
+  depends_on:
+    postgres:
+      condition: service_healthy
+    rabbitmq:
+      condition: service_healthy
+
 services:
   postgres:
     container_name: tazkara-postgres
@@ -91,46 +125,22 @@ services:
         condition: service_healthy
 
   booking-service:
-    container_name: tazkara-booking-service
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        SERVICE_MODULE: booking-service
-    restart: unless-stopped
+    <<: *booking-base
+    container_name: tazkara-booking-service-1
     ports:
       - "8083:8083"
-    environment:
-      DB_URL: jdbc:postgresql://postgres:5432/booking_db
-      DB_USER: ${DB_USER:?DB_USER is required}
-      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
-      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
-      API_SERVICE_KEY: ${API_SERVICE_KEY:?API_SERVICE_KEY is required}
 
-      EVENT_BASE_URL: http://event-service:8082
+  booking-service-2:
+    <<: *booking-base
+    container_name: tazkara-booking-service-2
+    ports:
+      - "8084:8083"
 
-      BATCH_SIZE: ${BATCH_SIZE:?BATCH_SIZE is required}
-      REFERENCE_RANDOM_SIZE: ${REFERENCE_RANDOM_SIZE:?REFERENCE_RANDOM_SIZE is required}
-      BOOKING_HOLD_DURATION: ${BOOKING_HOLD_DURATION:?BOOKING_HOLD_DURATION is required}
-      BOOKING_EXPIRY_INTERVAL: ${BOOKING_EXPIRY_INTERVAL:?BOOKING_EXPIRY_INTERVAL is required}
-
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_PORT: "5672"
-      RABBITMQ_USER: ${RABBITMQ_USER:?RABBITMQ_USER is required}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD is required}
-
-      RABBITMQ_EXCHANGE: ${RABBITMQ_EXCHANGE:?Required}
-
-      RABBITMQ_EVENT_PUBLISHED_QUEUE: ${RABBITMQ_EVENT_PUBLISHED_QUEUE:?Required}
-      RABBITMQ_EVENT_CANCELLED_QUEUE: ${RABBITMQ_EVENT_CANCELLED_QUEUE:?Required}
-      RABBITMQ_EVENT_PUBLISHED_KEY: ${RABBITMQ_EVENT_PUBLISHED_KEY:?Required}
-      RABBITMQ_EVENT_CANCELLED_KEY: ${RABBITMQ_EVENT_CANCELLED_KEY:?Required}
-      RABBITMQ_AVAILABILITY_CHANGED_KEY: ${RABBITMQ_AVAILABILITY_CHANGED_KEY:?Required}
-    depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+  booking-service-3:
+    <<: *booking-base
+    container_name: tazkara-booking-service-3
+    ports:
+      - "8085:8083"
 
   api-gateway-service:
     container_name: tazkara-api-gateway-service
